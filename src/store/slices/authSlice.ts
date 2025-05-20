@@ -96,7 +96,9 @@ export const login = createAsyncThunk(
       await dispatch(fetchUserProfile());
       return token;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Login failed");
+      console.log("error is ", error.response?.data);
+
+      return rejectWithValue(error.response?.data || "Login failed");
     }
   }
 );

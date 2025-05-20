@@ -66,8 +66,8 @@ export default function ForgotPasswordForm() {
             <div className="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-900/50 dark:text-green-400">
               <p>Password reset link has been sent to your email address.</p>
               <p className="mt-2">
-                Please check your email and follow the instructions to reset
-                your password.
+                If an account with that email exists, a rest link is send. Please check your email and
+                follow the instructions to reset your password. 
               </p>
             </div>
           ) : (
