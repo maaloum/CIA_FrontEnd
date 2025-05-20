@@ -21,10 +21,12 @@ import Home from "./pages/Dashboard/Home";
 import ForgotPassword from "./pages/AuthPages/ForgotPassword";
 import ResetPassword from "./pages/AuthPages/ResetPassword";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import AuthInitializer from "./components/auth/AuthInitializer";
 
 export default function App() {
   return (
     <>
+      <AuthInitializer />
       <Router>
         <ScrollToTop />
         <Routes>

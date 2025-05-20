@@ -46,6 +46,31 @@ const initialState: AuthState = {
   error: null,
 };
 
+export const fetchUserProfile = createAsyncThunk(
+  "auth/fetchUserProfile",
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const state = getState() as { auth: AuthState };
+      const token = state.auth.token;
+
+      if (!token) {
+        return rejectWithValue("No authentication token found");
+      }
+
+      const response = await api.get("/users/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch user profile"
+      );
+    }
+  }
+);
+
 export const register = createAsyncThunk(
   "auth/register",
   async (data: RegisterData, { rejectWithValue }) => {
@@ -62,11 +87,13 @@ export const register = createAsyncThunk(
 
 export const login = createAsyncThunk(
   "auth/login",
-  async (data: LoginData, { rejectWithValue }) => {
+  async (data: LoginData, { dispatch, rejectWithValue }) => {
     try {
       const response = await api.post("/auth/login", data);
       const { token } = response.data;
       localStorage.setItem("token", token);
+      // Fetch user profile after successful login
+      await dispatch(fetchUserProfile());
       return token;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Login failed");
@@ -112,6 +139,18 @@ const authSlice = createSlice({
         state.token = action.payload;
       })
       .addCase(login.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(fetchUserProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchUserProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+      })
+      .addCase(fetchUserProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });
