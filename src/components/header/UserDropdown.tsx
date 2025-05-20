@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { Dropdown } from "../ui/dropdown/Dropdown";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store";
 import { logout } from "../../store/slices/authSlice";
@@ -11,7 +11,7 @@ export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user } = useSelector((state: RootState) => state.auth);
+  const { user, token } = useSelector((state: RootState) => state.auth);
 
   function toggleDropdown() {
     setIsOpen(!isOpen);
@@ -23,7 +23,19 @@ export default function UserDropdown() {
 
   const handleLogout = async () => {
     try {
-      await api.post("/auth/logout");
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+
+      await api.post(
+        "/auth/logout",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       dispatch(logout());
       navigate("/signin");
     } catch (error) {
