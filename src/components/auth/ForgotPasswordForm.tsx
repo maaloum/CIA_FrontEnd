@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { useDispatch } from "react-redux";
+// import { useDispatch } from "react-redux";
 import { ChevronLeftIcon } from "../../icons";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
-import { AppDispatch } from "../../store";
+// import { AppDispatch } from "../../store";
+import api from "../../services/api";
 
 export default function ForgotPasswordForm() {
-  const dispatch = useDispatch<AppDispatch>();
+  // const dispatch = useDispatch<AppDispatch>();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -19,9 +20,14 @@ export default function ForgotPasswordForm() {
     setError(null);
 
     try {
-      // TODO: Implement forgot password API call
-      // const response = await api.post('/auth/forgot-password', { email });
-      setSuccess(true);
+      const response = await api.post("/users/forget-password", {
+        email,
+      });
+      if (response.status === 200) {
+        setSuccess(true);
+      } else {
+        setError("Failed to send reset password email. Please try again.");
+      }
     } catch (err) {
       setError("Failed to send reset password email. Please try again.");
     } finally {

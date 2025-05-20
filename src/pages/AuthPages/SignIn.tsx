@@ -6,8 +6,8 @@ export default function SignIn() {
   return (
     <>
       <PageMeta
-        title="React.js SignIn Dashboard | TailAdmin - Next.js Admin Dashboard Template"
-        description="This is React.js SignIn Tables Dashboard page for TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
+        title="Classic Insurance Agency | Tag and Title"
+        description="We provide a one-stop solution for Maryland tags, titles, and insurance, offering fast, convenient online services to meet all your vehicle and insurance needs."
       />
       <AuthLayout>
         <SignInForm />

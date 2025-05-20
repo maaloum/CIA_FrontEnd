@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 function TogglePairButton() {
   const [isPaired, setIsPaired] = useState(false);

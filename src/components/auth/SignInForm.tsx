@@ -44,7 +44,7 @@ export default function SignInForm() {
       const result = await dispatch(login(formData));
       if (login.fulfilled.match(result)) {
         resetForm();
-        navigate("/dashboard");
+        navigate("/");
       }
     } catch (err) {
       console.error("Sign in failed:", err);
