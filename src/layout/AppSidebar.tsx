@@ -308,14 +308,14 @@ const AppSidebar: React.FC = () => {
             <>
               <img
                 className="dark:hidden"
-                src="/images/logo/logo.svg"
+                src="/images/logo/logo.png"
                 alt="Logo"
-                width={150}
-                height={40}
+                width={190}
+                height={30}
               />
               <img
                 className="hidden dark:block"
-                src="/images/logo/logo-dark.svg"
+                src="/images/logo/logo.png"
                 alt="Logo"
                 width={150}
                 height={40}
@@ -323,7 +323,7 @@ const AppSidebar: React.FC = () => {
             </>
           ) : (
             <img
-              src="/images/logo/logo-icon.svg"
+              src="/images/logo/logo.png"
               alt="Logo"
               width={32}
               height={32}
@@ -331,7 +331,7 @@ const AppSidebar: React.FC = () => {
           )}
         </Link>
       </div>
-      <div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
+      {/* <div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
         <nav className="mb-6">
           <div className="flex flex-col gap-4">
             <div>
@@ -369,7 +369,7 @@ const AppSidebar: React.FC = () => {
           </div>
         </nav>
         {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null}
-      </div>
+      </div> */}
     </aside>
   );
 };

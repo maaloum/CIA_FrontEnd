@@ -5,7 +5,7 @@ import { ChevronLeftIcon } from "../../icons";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
 // import { AppDispatch } from "../../store";
-import api from "../../services/api";
+import { apiService } from "../../services/api";
 
 export default function ForgotPasswordForm() {
   // const dispatch = useDispatch<AppDispatch>();
@@ -20,7 +20,7 @@ export default function ForgotPasswordForm() {
     setError(null);
 
     try {
-      const response = await api.post("/users/forget-password", {
+      const response = await apiService.post("/users/forget-password", {
         email,
       });
       if (response.status === 200) {
@@ -66,8 +66,9 @@ export default function ForgotPasswordForm() {
             <div className="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-900/50 dark:text-green-400">
               <p>Password reset link has been sent to your email address.</p>
               <p className="mt-2">
-                If an account with that email exists, a rest link is send. Please check your email and
-                follow the instructions to reset your password. 
+                If an account with that email exists, a rest link is send.
+                Please check your email and follow the instructions to reset
+                your password.
               </p>
             </div>
           ) : (

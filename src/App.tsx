@@ -1,7 +1,19 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import AdminLayout from "./components/layouts/AdminLayout";
+import CustomerLayout from "./components/layouts/CustomerLayout";
+import CustomerDashboard from "./components/customer/CustomerDashboard";
+import PaymentsBilling from "./components/customer/PaymentsBilling";
+import Documents from "./components/customer/Documents";
+import Login from "./components/auth/SignInForm";
+// import SignUpForm from "./components/auth/SignUpForm";
+import NotFound from "./pages/OtherPage/NotFound";
 import SignIn from "./pages/AuthPages/SignIn";
 import SignUp from "./pages/AuthPages/SignUp";
-import NotFound from "./pages/OtherPage/NotFound";
 import UserProfiles from "./pages/UserProfiles";
 import Videos from "./pages/UiElements/Videos";
 import Images from "./pages/UiElements/Images";
@@ -22,6 +34,24 @@ import ForgotPassword from "./pages/AuthPages/ForgotPassword";
 import ResetPassword from "./pages/AuthPages/ResetPassword";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import AuthInitializer from "./components/auth/AuthInitializer";
+import Profile from "./components/customer/Profile";
+import AdminDashboard from "./components/admin/AdminDashboard";
+import { useSelector } from "react-redux";
+import { RootState } from "./store";
+
+function RootRedirect() {
+  const user = useSelector((state: RootState) => state.auth.user);
+
+  if (!user) {
+    return <Navigate to="/signin" replace />;
+  }
+
+  if (user.role === "admin") {
+    return <Navigate to="/admin" replace />;
+  }
+
+  return <Navigate to="/customer" replace />;
+}
 
 export default function App() {
   return (
@@ -66,7 +96,55 @@ export default function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
 
-          {/* Fallback Route */}
+          {/* Customer Routes */}
+          <Route
+            path="/customer"
+            element={
+              <CustomerLayout>
+                <CustomerDashboard />
+              </CustomerLayout>
+            }
+          />
+          <Route
+            path="/customer/payments"
+            element={
+              <CustomerLayout>
+                <PaymentsBilling />
+              </CustomerLayout>
+            }
+          />
+          <Route
+            path="/customer/documents"
+            element={
+              <CustomerLayout>
+                <Documents />
+              </CustomerLayout>
+            }
+          />
+          <Route
+            path="/customer/profile"
+            element={
+              <CustomerLayout>
+                <Profile />
+              </CustomerLayout>
+            }
+          />
+
+          {/* Admin Routes */}
+          <Route
+            path="/admin"
+            element={
+              <AdminLayout>
+                <AdminDashboard />
+              </AdminLayout>
+            }
+          />
+          <Route path="/admin/*" element={<AdminLayout />} />
+
+          {/* Redirect root to login */}
+          <Route path="/" element={<Login />} />
+
+          {/* 404 Route */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>

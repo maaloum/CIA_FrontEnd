@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import api from "../../services/api";
+import { apiService } from "../../services/api";
 
 interface RegisterData {
   firstName: string;
@@ -20,6 +20,7 @@ interface LoginData {
 }
 
 interface User {
+  role: "admin" | "customer" | "agent";
   id: string;
   firstName: string;
   lastName: string;
@@ -32,11 +33,24 @@ interface User {
   status: string;
 }
 
+interface RegisterResponse {
+  user: User;
+  token: string;
+}
+
 interface AuthState {
   user: User | null;
   token: string | null;
   loading: boolean;
   error: string | null;
+}
+
+interface ApiError {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
 }
 
 const initialState: AuthState = {
@@ -57,15 +71,12 @@ export const fetchUserProfile = createAsyncThunk(
         return rejectWithValue("No authentication token found");
       }
 
-      const response = await api.get("/users/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await apiService.get<User>("/users/me", token);
       return response.data;
-    } catch (error: any) {
+    } catch (error) {
+      const apiError = error as ApiError;
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch user profile"
+        apiError.response?.data?.message || "Failed to fetch user profile"
       );
     }
   }
@@ -75,11 +86,15 @@ export const register = createAsyncThunk(
   "auth/register",
   async (data: RegisterData, { rejectWithValue }) => {
     try {
-      const response = await api.post("/users/register", data);
+      const response = await apiService.post<RegisterResponse, RegisterData>(
+        "/users/register",
+        data
+      );
       return response.data;
-    } catch (error: any) {
+    } catch (error) {
+      const apiError = error as ApiError;
       return rejectWithValue(
-        error.response?.data?.message || "Registration failed"
+        apiError.response?.data?.message || "Registration failed"
       );
     }
   }
@@ -89,16 +104,19 @@ export const login = createAsyncThunk(
   "auth/login",
   async (data: LoginData, { dispatch, rejectWithValue }) => {
     try {
-      const response = await api.post("/auth/login", data);
+      const response = await apiService.post<{ token: string }, LoginData>(
+        "/auth/login",
+        data
+      );
       const { token } = response.data;
       localStorage.setItem("token", token);
       // Fetch user profile after successful login
       await dispatch(fetchUserProfile());
       return token;
-    } catch (error: any) {
-      console.log("error is ", error.response?.data);
-
-      return rejectWithValue(error.response?.data || "Login failed");
+    } catch (error) {
+      const apiError = error as ApiError;
+      console.log("error is ", apiError.response?.data);
+      return rejectWithValue(apiError.response?.data || "Login failed");
     }
   }
 );
