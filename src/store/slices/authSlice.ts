@@ -87,7 +87,7 @@ export const register = createAsyncThunk(
   async (data: RegisterData, { rejectWithValue }) => {
     try {
       const response = await apiService.post<RegisterResponse, RegisterData>(
-        "/users/register",
+        "/auth/register",
         data
       );
       return response.data;

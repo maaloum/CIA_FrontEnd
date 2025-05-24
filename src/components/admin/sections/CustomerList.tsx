@@ -199,7 +199,7 @@ export default function CustomerList() {
                   </span>
                 </td>
                 <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                  {customer.insuranceCount} policies
+                  {customer.numberOfPolicies} policies
                 </td>
                 <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
                   <div className="flex items-center justify-end gap-2">

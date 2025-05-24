@@ -139,7 +139,7 @@ export default function App() {
               </AdminLayout>
             }
           />
-          <Route path="/admin/*" element={<AdminLayout />} />
+          {/* <Route path="/admin/*" element={<AdminLayout />} /> */}
 
           {/* Redirect root to login */}
           <Route path="/" element={<Login />} />
