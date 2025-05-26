@@ -20,7 +20,7 @@ interface LoginData {
 }
 
 interface User {
-  role: "admin" | "customer" | "agent";
+  role: "ADMIN" | "CUSTOMER" | "AGENT";
   id: string;
   firstName: string;
   lastName: string;
