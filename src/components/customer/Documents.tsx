@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   ListIcon,
   DownloadIcon,
@@ -7,6 +7,7 @@ import {
   UserIcon,
   BoxIcon,
   FileIcon,
+  TrashBinIcon,
 } from "../../icons";
 import Button from "../../components/ui/Button";
 import Input from "../../components/form/input/InputField";
@@ -26,9 +27,7 @@ export default function Documents() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedType, setSelectedType] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
-
-  // Mock data - replace with actual API call
-  const documents: Document[] = [
+  const [documents, setDocuments] = useState<Document[]>([
     {
       id: "1",
       name: "Auto Insurance Policy",
@@ -57,7 +56,71 @@ export default function Documents() {
       status: "valid",
       fileUrl: "/documents/vehicle-reg.pdf",
     },
-  ];
+  ]);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Create a new document object
+    const newDocument: Document = {
+      id: Date.now().toString(), // Generate a unique ID
+      name: file.name,
+      type: "other", // Default type, can be changed later
+      uploadDate: new Date().toISOString().split("T")[0],
+      status: "valid",
+      fileUrl: URL.createObjectURL(file), // Create a temporary URL for the file
+    };
+
+    // Add the new document to the documents array
+    setDocuments((prevDocuments) => [...prevDocuments, newDocument]);
+
+    // Reset the file input
+    event.target.value = "";
+  };
+
+  const handleDownload = (doc: Document) => {
+    // For files with URLs (like the sample data)
+    if (doc.fileUrl.startsWith("/")) {
+      // Create a temporary link element
+      const link = document.createElement("a");
+      link.href = doc.fileUrl;
+      link.download = doc.name;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      // For files uploaded by the user (using URL.createObjectURL)
+      fetch(doc.fileUrl)
+        .then((response) => response.blob())
+        .then((blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = doc.name;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+        })
+        .catch((error) => {
+          console.error("Error downloading file:", error);
+          // You might want to show an error message to the user here
+        });
+    }
+  };
+
+  const handleRemove = (docId: string) => {
+    setDocuments((prevDocuments) =>
+      prevDocuments.filter((doc) => doc.id !== docId)
+    );
+  };
 
   const filteredDocuments = documents.filter((doc) => {
     const matchesSearch = doc.name
@@ -136,7 +199,19 @@ export default function Documents() {
             <option value="expired">Expired</option>
             <option value="pending">Pending</option>
           </select>
-          <Button variant="primary" className="w-full sm:w-auto">
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            className="hidden"
+            accept=".pdf,.jpg,.jpeg,.png"
+            aria-label="Upload document"
+          />
+          <Button
+            variant="primary"
+            className="w-full sm:w-auto"
+            onClick={handleUploadClick}
+          >
             <PlusIcon className="mr-2 h-5 w-5" />
             Upload Document
           </Button>
@@ -197,9 +272,19 @@ export default function Documents() {
                 variant="outline"
                 size="sm"
                 className="flex items-center gap-1 text-brand-600 hover:text-brand-900 dark:text-brand-400 dark:hover:text-brand-300"
+                onClick={() => handleDownload(doc)}
               >
                 <DownloadIcon className="h-4 w-4" />
                 Download
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-1 text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                onClick={() => handleRemove(doc.id)}
+              >
+                <TrashBinIcon className="h-4 w-4" />
+                Remove
               </Button>
             </div>
           </div>
