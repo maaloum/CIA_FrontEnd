@@ -8,7 +8,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   startIcon?: ReactNode;
 }
 
-export default function Button({
+export function Button({
   children,
   variant = "primary",
   size = "md",
