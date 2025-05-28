@@ -3,8 +3,7 @@ import { Link, useSearchParams } from "react-router";
 import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
-import api from "../../services/api";
-
+import { apiService } from "../../services/api";
 export default function ResetPasswordForm() {
   const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
@@ -48,7 +47,7 @@ export default function ResetPasswordForm() {
     }
 
     try {
-      const response = await api.post("/users/reset-password", {
+      const response = await apiService.post("/users/reset-password", {
         email: formData.email,
         newPassword: formData.newPassword,
         resetToken: resetToken,
