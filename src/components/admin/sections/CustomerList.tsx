@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { ListIcon } from "../../../icons";
 import Input from "../../form/input/InputField";
-import Button from "../../ui/Button";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../store";
 import { customerService, Customer } from "../../../services/customerService";
 import ConfirmationPopup from "../../ui/popup/ConfirmationPopup";
+import Button from "../../ui/Button";
 
 type CustomerStatus = "ACTIVE" | "INACTIVE" | "PENDING";
 
@@ -148,7 +148,7 @@ export default function CustomerList() {
             <option value="INACTIVE">Inactive</option>
             <option value="PENDING">Pending</option>
           </select>
-          <Button variant="primary">Add Customer</Button>
+          {/* <Button variant="primary">Add Customer</Button> */}
         </div>
       </div>
 
@@ -203,21 +203,9 @@ export default function CustomerList() {
                 </td>
                 <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
                   <div className="flex items-center justify-end gap-2">
-                    <button
-                      className="text-brand-600 hover:text-brand-900 dark:text-brand-400 dark:hover:text-brand-300"
-                      onClick={() => {
-                        /* TODO: Implement edit */
-                      }}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 disabled:opacity-50"
-                      onClick={() => handleDeleteClick(customer)}
-                      disabled={deletingId === customer.id}
-                    >
-                      {deletingId === customer.id ? "Deleting..." : "Delete"}
-                    </button>
+                    <Button variant="outline" size="sm">
+                      View
+                    </Button>
                   </div>
                 </td>
               </tr>
@@ -225,20 +213,6 @@ export default function CustomerList() {
           </tbody>
         </table>
       </div>
-
-      <ConfirmationPopup
-        isOpen={showDeletePopup}
-        onClose={() => {
-          setShowDeletePopup(false);
-          setCustomerToDelete(null);
-        }}
-        onConfirm={handleDeleteConfirm}
-        title="Delete Customer"
-        message={`Are you sure you want to delete ${customerToDelete?.firstName} ${customerToDelete?.lastName}? This action cannot be undone.`}
-        confirmText="Delete"
-        cancelText="Cancel"
-        type="danger"
-      />
     </div>
   );
 }
