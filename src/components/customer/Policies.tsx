@@ -8,7 +8,7 @@ import {
   FileIcon,
   UserIcon,
 } from "../../icons";
-import Button from "../ui/button/Button";
+import {Button} from "../ui/button/Button";
 import Input from "../form/input/InputField";
 // import { RootState } from "../../store";
 
