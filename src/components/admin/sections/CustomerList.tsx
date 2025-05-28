@@ -4,7 +4,6 @@ import Input from "../../form/input/InputField";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../store";
 import { customerService, Customer } from "../../../services/customerService";
-import ConfirmationPopup from "../../ui/popup/ConfirmationPopup";
 import Button from "../../ui/Button";
 
 type CustomerStatus = "ACTIVE" | "INACTIVE" | "PENDING";
@@ -17,11 +16,6 @@ export default function CustomerList() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [showDeletePopup, setShowDeletePopup] = useState(false);
-  const [customerToDelete, setCustomerToDelete] = useState<Customer | null>(
-    null
-  );
   const { token } = useSelector((state: RootState) => state.auth);
 
   const fetchCustomers = async () => {
@@ -45,40 +39,6 @@ export default function CustomerList() {
   useEffect(() => {
     fetchCustomers();
   }, [token]);
-
-  const handleDeleteClick = (customer: Customer) => {
-    setCustomerToDelete(customer);
-    setShowDeletePopup(true);
-  };
-
-  const handleDeleteConfirm = async () => {
-    if (!token || !customerToDelete) {
-      return;
-    }
-
-    try {
-      setDeletingId(customerToDelete.id);
-      const response = await customerService.deleteCustomer(
-        customerToDelete.id,
-        token
-      );
-
-      // Remove the deleted customer from the local state
-      setCustomers((prevCustomers) =>
-        prevCustomers.filter((customer) => customer.id !== customerToDelete.id)
-      );
-
-      // Show success message (you might want to add a toast notification here)
-      console.log(response.message);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to delete customer"
-      );
-    } finally {
-      setDeletingId(null);
-      setCustomerToDelete(null);
-    }
-  };
 
   const filteredCustomers = customers.filter((customer) => {
     const matchesSearch =
