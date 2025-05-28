@@ -28,7 +28,6 @@ import Home from "./pages/Dashboard/Home";
 import ForgotPassword from "./pages/AuthPages/ForgotPassword";
 import ResetPassword from "./pages/AuthPages/ResetPassword";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
-import AuthInitializer from "./components/auth/AuthInitializer";
 import AdminDashboard from "./components/admin/AdminDashboard";
 import Policies from "./components/customer/Policies";
 import Settings from "./components/Settings";
@@ -40,7 +39,6 @@ import Customers from "./components/admin/Customers";
 export default function App() {
   return (
     <>
-      <AuthInitializer />
       <Router>
         <ScrollToTop />
         <Routes>

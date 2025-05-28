@@ -4,7 +4,7 @@ import { CardHeader } from "../ui/card/CardHeader";
 import { CardBody } from "../ui/card/CardBody";
 import { Input } from "../ui/input/Input";
 import { Select } from "../ui/select/Select";
-import Button from "../ui/button/Button";
+import {Button} from "../ui/button/Button";
 
 interface Policy {
   id: string;

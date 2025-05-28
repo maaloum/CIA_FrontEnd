@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSelector } from "react-redux";
+// import { useSelector } from "react-redux";
 import {
   ListIcon,
   DownloadIcon,
@@ -8,9 +8,9 @@ import {
   FileIcon,
   UserIcon,
 } from "../../icons";
-import Button from "../ui/Button";
+import {Button} from "../ui/button/Button";
 import Input from "../form/input/InputField";
-import { RootState } from "../../store";
+// import { RootState } from "../../store";
 
 interface Policy {
   id: string;
@@ -33,7 +33,7 @@ interface Policy {
 }
 
 export default function Policies() {
-  const user = useSelector((state: RootState) => state.auth.user);
+  // const user = useSelector((state: RootState) => state.auth.user);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedType, setSelectedType] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");

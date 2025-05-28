@@ -1,6 +1,6 @@
 import { ReactNode, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { Navigate, Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { RootState } from "../../store";
 import Sidebar from "../navigation/Sidebar";
 
@@ -15,7 +15,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   useEffect(() => {
     if (!user) {
       navigate("/login", { replace: true });
-    } else if (user.role !== "admin") {
+    } else if (user.role !== "ADMIN") {
       navigate("/customer", { replace: true });
     }
   }, [user, navigate]);
@@ -26,7 +26,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   // Don't render admin layout for non-admin users
-  if (user.role !== "admin") {
+  if (user.role !== "ADMIN") {
     return null;
   }
 

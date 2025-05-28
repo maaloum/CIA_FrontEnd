@@ -10,5 +10,5 @@ export default function Settings() {
     return null;
   }
 
-  return user.role === "admin" ? <AdminSettings /> : <CustomerSettings />;
+  return user.role === "ADMIN" ? <AdminSettings /> : <CustomerSettings />;
 }

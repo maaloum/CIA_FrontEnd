@@ -1,4 +1,4 @@
-import { ChangeEvent, SelectHTMLAttributes } from "react";
+import { SelectHTMLAttributes } from "react";
 
 interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   className?: string;

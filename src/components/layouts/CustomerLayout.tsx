@@ -1,6 +1,5 @@
-import { ReactNode, useEffect } from "react";
+import { ReactNode } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { RootState } from "../../store";
 import Sidebar from "../navigation/Sidebar";
 
@@ -10,7 +9,6 @@ interface CustomerLayoutProps {
 
 export default function CustomerLayout({ children }: CustomerLayoutProps) {
   const user = useSelector((state: RootState) => state.auth.user);
-  const navigate = useNavigate();
 
   console.log({
     user,
@@ -30,7 +28,7 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
   }
 
   // Don't render customer layout for non-customer users
-  if (user.role !== "customer") {
+  if (user.role !== "CUSTOMER") {
     return null;
   }
 

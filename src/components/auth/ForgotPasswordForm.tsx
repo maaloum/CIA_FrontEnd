@@ -3,7 +3,7 @@ import { Link } from "react-router";
 // import { useDispatch } from "react-redux";
 import { ChevronLeftIcon } from "../../icons";
 import Label from "../form/Label";
-import Input from "../form/input/InputField";
+import { Input } from "../ui/input/Input";
 // import { AppDispatch } from "../../store";
 import { apiService } from "../../services/api";
 
