@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Card } from "../ui/card/Card";
-import { CardHeader } from "../ui/card/CardHeader";
-import { CardBody } from "../ui/card/CardBody";
+import { Card } from "../../ui/card/Card";
+import { CardHeader } from "../../ui/card/CardHeader";
+import { CardBody } from "../../ui/card/CardBody";
 import { Button } from "../../ui/button/Button";
-import { Input } from "../ui/input/Input";
-import { Select } from "../ui/select/Select";
+import { Input } from "../../ui/input/Input";
+import { Select } from "../../ui/select/Select";
 
 interface Policy {
   id: string;
@@ -157,10 +157,10 @@ export default function Policies() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                       <div className="flex space-x-2">
-                        <Button variant="secondary" size="sm">
+                        <Button variant="outline" size="sm">
                           View
                         </Button>
-                        <Button variant="secondary" size="sm">
+                        <Button variant="outline" size="sm">
                           Edit
                         </Button>
                       </div>
