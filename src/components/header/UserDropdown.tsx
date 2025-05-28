@@ -5,7 +5,7 @@ import { useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store";
 import { logout } from "../../store/slices/authSlice";
-import { apiService } from "../../services/api";
+// import { apiService } from "../../services/api";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);

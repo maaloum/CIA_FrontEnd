@@ -50,8 +50,8 @@ export class ApiService {
         status: response.status,
         message: "Success",
       };
-    } catch (error) {
-      throw new Error("Failed to parse response");
+    } catch {
+      throw new Error(" Failed to parse response");
     }
   }
 

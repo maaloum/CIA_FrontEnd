@@ -49,14 +49,14 @@ export default function Buttons() {
             <Button
               size="sm"
               variant="primary"
-              endIcon={<BoxIcon className="size-5" />}
+              startIcon={<BoxIcon className="size-5" />}
             >
               Button Text
             </Button>
             <Button
               size="md"
               variant="primary"
-              endIcon={<BoxIcon className="size-5" />}
+              startIcon={<BoxIcon className="size-5" />}
             >
               Button Text
             </Button>
@@ -99,14 +99,14 @@ export default function Buttons() {
             <Button
               size="sm"
               variant="outline"
-              endIcon={<BoxIcon className="size-5" />}
+              startIcon={<BoxIcon className="size-5" />}
             >
               Button Text
             </Button>
             <Button
               size="md"
               variant="outline"
-              endIcon={<BoxIcon className="size-5" />}
+              startIcon={<BoxIcon className="size-5" />}
             >
               Button Text
             </Button>

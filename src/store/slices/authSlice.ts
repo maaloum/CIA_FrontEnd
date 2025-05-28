@@ -82,33 +82,30 @@ export const fetchUserProfile = createAsyncThunk(
   }
 );
 
-export const register = createAsyncThunk(
-  "auth/register",
-  async (data: RegisterData, { rejectWithValue }) => {
-    try {
-      const response = await apiService.post<RegisterResponse, RegisterData>(
-        "/auth/register",
-        data
-      );
-      return response.data;
-    } catch (error) {
-      const apiError = error as ApiError;
-      return rejectWithValue(
-        apiError.response?.data?.message || "Registration failed"
-      );
-    }
+export const register = createAsyncThunk<
+  RegisterResponse,
+  RegisterData,
+  { rejectValue: string }
+>("auth/register", async (data, { rejectWithValue }) => {
+  try {
+    const response = await apiService.post("/auth/register", data);
+    return response.data as RegisterResponse;
+  } catch (error) {
+    const apiError = error as ApiError;
+    const message = apiError.response?.data?.message ?? "Registration failed";
+
+    return rejectWithValue(message);
   }
-);
+});
 
 export const login = createAsyncThunk(
   "auth/login",
   async (data: LoginData, { dispatch, rejectWithValue }) => {
     try {
-      const response = await apiService.post<{ token: string }, LoginData>(
-        "/auth/login",
-        data
-      );
-      const { token } = response.data;
+      const response = await apiService.post("/auth/login", data);
+      const { token }: { token: string } = response?.data as { token: string };
+
+      console.log("data", response?.data);
       localStorage.setItem("token", token);
       // Fetch user profile after successful login
       await dispatch(fetchUserProfile());
