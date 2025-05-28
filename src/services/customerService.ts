@@ -1,6 +1,7 @@
 import { apiService } from "./api";
 
 export interface Customer {
+  numberOfPolicies: number;
   id: string;
   firstName: string;
   lastName: string;

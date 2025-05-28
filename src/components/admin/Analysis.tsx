@@ -3,7 +3,7 @@ import { Card } from "../ui/card/Card";
 import { CardHeader } from "../ui/card/CardHeader";
 import { CardBody } from "../ui/card/CardBody";
 import { CardFooter } from "../ui/card/CardFooter";
-import  Button  from "../ui/button/Button";
+import Button from "../ui/button/Button";
 import { Select } from "../ui/select/Select";
 
 interface MetricCard {
@@ -177,7 +177,7 @@ export default function Analysis() {
             </div>
           </CardBody>
           <CardFooter>
-            <Button variant="secondary" className="w-full">
+            <Button variant="outline" className="w-full">
               View All Claims
             </Button>
           </CardFooter>
