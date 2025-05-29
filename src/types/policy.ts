@@ -1,4 +1,5 @@
 export interface Policy {
+  map(arg0: (policy: Policy) => import("react/jsx-runtime").JSX.Element): import("react").ReactNode;
   id: string;
   policyNumber: string;
   productName: string;

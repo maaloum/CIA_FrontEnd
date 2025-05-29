@@ -1,9 +1,9 @@
 import { Tab } from "@headlessui/react";
 import { Customer } from "../../../services/customerService";
-import { Policy } from "../../../services/policyService";
 import { ProfileCard } from "../profile/ProfileCard";
 import { PolicyCard } from "../policy/PolicyCard";
 import { DocumentCard } from "../document/DocumentCard";
+import { Policy } from "../../../types/policy";
 
 interface CustomerPanelProps {
   customer: Customer;
@@ -127,7 +127,7 @@ export const CustomerManagement = ({
                 </div>
               ) : (
                 <div className="space-y-6">
-                  {policies[0].map((policy) => (
+                  {policies[0].map((policy: Policy) => (
                     <PolicyCard
                       key={policy.id}
                       policy={policy}
@@ -156,7 +156,7 @@ export const CustomerManagement = ({
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {policies[0].map((policy) => (
+                  {policies[0].map((policy: Policy) => (
                     <DocumentCard
                       key={policy.id}
                       policy={policy}
