@@ -17,7 +17,7 @@ export const DocumentCard = ({
   return (
     <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
       <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-4">
-        Policy #{policy.policyNumber} Documents
+        Policy #{policy.policyNumber}
       </h3>
       <div className="space-y-2">
         <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 dark:border-gray-700 dark:bg-gray-800">

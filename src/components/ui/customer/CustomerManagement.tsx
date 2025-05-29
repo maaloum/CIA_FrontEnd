@@ -156,7 +156,7 @@ export const CustomerManagement = ({
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {policies.map((policy) => (
+                  {policies[0].map((policy) => (
                     <DocumentCard
                       key={policy.id}
                       policy={policy}

@@ -5,7 +5,7 @@ import { Button } from "../button/Button";
 interface PolicyCardProps {
   policy: Policy;
   onEdit?: () => void;
-  onDelete?: () => void;
+  onDelete?: () => void;    
 }
 
 const getStatusColor = (status: string) => {
