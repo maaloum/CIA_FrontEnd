@@ -1,4 +1,5 @@
 import { useRef, useEffect } from "react";
+// import { useHeader } from "../../../context/HeaderContext";
 
 interface ModalProps {
   isOpen: boolean;
@@ -56,6 +57,12 @@ export const Modal: React.FC<ModalProps> = ({
   return (
     <div className="fixed inset-0 flex items-center justify-center overflow-y-auto z-[9999]">
       {!isFullscreen && (
+        <div
+          className="fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[32px] z-[9998]"
+          onClick={onClose}
+        ></div>
+      )}
+      {isFullscreen && (
         <div
           className="fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[32px] z-[9998]"
           onClick={onClose}

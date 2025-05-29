@@ -27,9 +27,8 @@ export const PolicyGrowthChart = ({
   policies,
   isLoading,
 }: PolicyGrowthChartProps) => {
+  const showCursor = policies.length > 3;
 
-
-  console.log({ policies });
   return (
     <Card>
       <CardHeader>
@@ -68,7 +67,23 @@ export const PolicyGrowthChart = ({
                 />
                 <YAxis yAxisId="left" />
                 <YAxis yAxisId="right" orientation="right" />
-                <Tooltip />
+                <Tooltip
+                  cursor={
+                    showCursor
+                      ? {
+                          stroke: "#4F46E5",
+                          strokeWidth: 1,
+                          strokeDasharray: "3 3",
+                        }
+                      : false
+                  }
+                  contentStyle={{
+                    backgroundColor: "white",
+                    border: "1px solid #ccc",
+                    borderRadius: "4px",
+                    padding: "8px",
+                  }}
+                />
                 <Legend />
                 <Line
                   yAxisId="left"
@@ -79,6 +94,8 @@ export const PolicyGrowthChart = ({
                   strokeWidth={2}
                   dot={{ r: 4 }}
                   activeDot={{ r: 6 }}
+                  animationDuration={1500}
+                  animationBegin={0}
                 />
                 <Line
                   yAxisId="right"
@@ -89,6 +106,8 @@ export const PolicyGrowthChart = ({
                   strokeWidth={2}
                   dot={{ r: 4 }}
                   activeDot={{ r: 6 }}
+                  animationDuration={1500}
+                  animationBegin={0}
                 />
               </LineChart>
             </ResponsiveContainer>

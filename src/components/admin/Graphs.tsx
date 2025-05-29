@@ -13,6 +13,10 @@ import { GenderDistributionChart } from "../ui/graphs/GenderDistributionChart";
 import { GeographicDistributionChart } from "../ui/graphs/GeographicDistributionChart";
 import { Policy } from "../../types/policy";
 import { calculateMonthlyPolicyGrowth } from "../../utiles/PolicyGrow";
+import {
+  calculateRevenueDistributionByPolicyType,
+  PolicyDistrubutionChartProps,
+} from "../../utiles/RevenueDistributionByPolicy";
 
 interface RegionData {
   region: string;
@@ -27,12 +31,6 @@ interface AgeGroupData {
 interface GenderData {
   name: string;
   value: number;
-}
-
-interface PolicyGrowthData {
-  month: string;
-  count: number;
-  growthRate: number;
 }
 
 const AGE_GROUPS = [
@@ -60,6 +58,9 @@ export default function Graphs() {
   const [isLoading, setIsLoading] = useState(false);
   // const [policies, setPolicies] = useState<Policy[]>([]);
   const [policyGrowthData, setPolicyGrowthData] = useState<Policy[]>([]);
+  const [policyRevenueData, setpolicyRevenueData] = useState<
+    PolicyDistrubutionChartProps[]
+  >([]);
 
   useEffect(() => {
     fetchCustomerData();
@@ -122,6 +123,8 @@ export default function Graphs() {
       const data = await policyService.getPolicies(token);
       console.log({ data });
       setPolicyGrowthData(calculateMonthlyPolicyGrowth(data));
+
+      setpolicyRevenueData(calculateRevenueDistributionByPolicyType(data));
     } catch (error) {
       console.error("Error fetching policies:", error);
       toast.error("Failed to load policies");
@@ -225,7 +228,10 @@ export default function Graphs() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <PolicyGrowthChart policies={policyGrowthData} isLoading={isLoading} />
-        <RevenueDistributionChart />
+        <RevenueDistributionChart
+          policies={policyRevenueData}
+          isLoading={isLoading}
+        />
         <ClaimsAnalysisChart />
         <CustomerDemographicsChart
           ageGroupData={ageGroupData}

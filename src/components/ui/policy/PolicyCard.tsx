@@ -3,9 +3,10 @@ import Label from "../../form/Label";
 import { Button } from "../button/Button";
 
 interface PolicyCardProps {
+  id?: string;
   policy: Policy;
   onEdit?: () => void;
-  onDelete?: () => void;    
+  onDelete?: () => void;
 }
 
 const getStatusColor = (status: string) => {
@@ -41,9 +42,14 @@ const formatCurrency = (amount: number) => {
   }).format(amount);
 };
 
-export const PolicyCard = ({ policy, onEdit, onDelete }: PolicyCardProps) => {
+export const PolicyCard = ({
+  id,
+  policy,
+  onEdit,
+  onDelete,
+}: PolicyCardProps) => {
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" id={id}>
       <div
         key={policy.id}
         className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800"

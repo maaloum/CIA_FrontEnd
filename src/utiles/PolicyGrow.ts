@@ -1,5 +1,10 @@
 import { Policy } from "../types/policy";
 
+export type PolicyGrowthData = {
+  month: string;
+  count: number;
+  growthRate: number;
+}[];
 export function calculateMonthlyPolicyGrowth(policies: Policy[]) {
   console.log("incoming policy", policies);
   const grouped: Record<string, number> = {};
@@ -19,7 +24,7 @@ export function calculateMonthlyPolicyGrowth(policies: Policy[]) {
 
   const sortedKeys = Object.keys(grouped).sort();
   console.log({ sortedKeys });
-  const result = [];
+  const result: PolicyGrowthData = [];
 
   for (let i = 1; i < sortedKeys.length; i++) {
     const currentMonth = sortedKeys[i];
