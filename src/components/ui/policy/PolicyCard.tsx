@@ -1,4 +1,4 @@
-import { Policy } from "../../../services/policyService";
+import { Policy } from "../../../types/policy";
 import { Button } from "../button/Button";
 
 interface PolicyCardProps {

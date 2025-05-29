@@ -1,57 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { apiService } from "../../services/api";
-
-interface RegisterData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  address: string;
-  dateOfBirth: string;
-  communicationPref: string;
-  password: string;
-  gender: string;
-  status: string;
-}
-
-interface LoginData {
-  email: string;
-  password: string;
-}
-
-interface User {
-  role: "ADMIN" | "CUSTOMER" | "AGENT";
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  address: string;
-  dateOfBirth: string;
-  communicationPref: string;
-  gender: string;
-  status: string;
-}
-
-interface RegisterResponse {
-  user: User;
-  token: string;
-}
-
-interface AuthState {
-  user: User | null;
-  token: string | null;
-  loading: boolean;
-  error: string | null;
-}
-
-interface ApiError {
-  response?: {
-    data?: {
-      message?: string;
-    };
-  };
-}
+import {
+  RegisterData,
+  LoginData,
+  User,
+  RegisterResponse,
+  AuthState,
+  ApiError,
+} from "../../types/auth";
 
 const initialState: AuthState = {
   user: null,

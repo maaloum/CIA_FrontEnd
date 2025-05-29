@@ -8,7 +8,8 @@ import { Button } from "../ui/button/Button";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
 import { toast } from "react-hot-toast";
-import { policyService, Policy } from "../../services/policyService";
+import { policyService } from "../../services/policyService";
+import {Policy} from "../../types/policy"
 
 export default function Policies() {
   const [searchTerm, setSearchTerm] = useState("");
