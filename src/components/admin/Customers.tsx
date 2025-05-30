@@ -14,6 +14,7 @@ import { toast } from "react-hot-toast";
 import { customerService, Customer } from "../../services/customerService";
 import { useHeader } from "../../context/HeaderContext";
 import { policyService } from "../../services/policyService";
+import { documentService, Document } from "../../services/documentService";
 import { Policy } from "../../types/policy";
 import { CustomerManagement } from "../ui/customer/CustomerManagement";
 import ConfirmationPopup from "../ui/popup/ConfirmationPopup";
@@ -39,6 +40,8 @@ export default function Customers() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [policies, setPolicies] = useState<Policy[]>([]);
   const [isLoadingPolicies, setIsLoadingPolicies] = useState(false);
+  const [documents, setDocuments] = useState<{ [key: string]: Document[] }>({});
+  const [isLoadingDocuments, setIsLoadingDocuments] = useState(false);
 
   useEffect(() => {
     fetchCustomers();
@@ -84,21 +87,36 @@ export default function Customers() {
     setShowProfileModal(true);
     hideHeader();
     setIsLoadingPolicies(true);
+    setIsLoadingDocuments(true);
     try {
-      const data = await policyService.getPolicyById(customer.id, token);
+      const policyData = await policyService.getPolicyById(customer.id, token);
 
-      if (data) {
-        setPolicies([data]);
-      } else {
-        setPolicies([]);
-        toast.error("No policy data received");
-      }
+      const documentsDataArray = await Promise.all(
+        policyData.map((policy) =>
+          documentService.getPolicyDocuments(policy.id, token)
+        )
+      );
+
+      // Create a flat map of documents by policyId
+      const documentsByPolicyId = {};
+      policyData.forEach((policy, index) => {
+        documentsByPolicyId[policy.id] = Array.isArray(
+          documentsDataArray[index]
+        )
+          ? documentsDataArray[index].flat() // just in case
+          : [];
+      });
+
+      setPolicies(policyData);
+      setDocuments(documentsByPolicyId);
     } catch (error) {
-      console.error("Error fetching policy:", error);
+      console.error("Error fetching data:", error);
       toast.error("Failed to load policy details");
       setPolicies([]);
+      setDocuments({});
     } finally {
       setIsLoadingPolicies(false);
+      setIsLoadingDocuments(false);
     }
   };
 
@@ -148,6 +166,57 @@ export default function Customers() {
       setCustomerToDelete(null);
       setShowDeletePopup(false);
       showHeader();
+    }
+  };
+
+  const handleDownloadDocument = async (document: Document) => {
+    try {
+      const response = await fetch(document.url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error("Download failed");
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = document.fileName;
+      document.body.appendChild(link);
+      link.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error downloading document:", error);
+      toast.error("Failed to download document");
+    }
+  };
+
+  const handleUploadDocument = async (policy: Policy, files: File[]) => {
+    if (!token) {
+      toast.error("Authentication token is missing");
+      return;
+    }
+
+    try {
+      const uploadedDocuments = await documentService.uploadDocuments(
+        files,
+        policy.id,
+        policy.application.id,
+        token
+      );
+
+      setDocuments((prev) => ({
+        ...prev,
+        [policy.id]: [...(prev[policy.id] || []), ...uploadedDocuments],
+      }));
+
+      toast.success("Documents uploaded successfully");
+    } catch (error) {
+      console.error("Error uploading documents:", error);
+      toast.error("Failed to upload documents");
     }
   };
 
@@ -316,13 +385,15 @@ export default function Customers() {
         onClose={handleCloseProfileModal}
         className="max-w-[900px] m-4 z-[9999]"
         showCloseButton={false}
-        isFullscreen={true}
+        // isFullscreen={true}
       >
         {selectedCustomer && (
           <CustomerManagement
             customer={selectedCustomer}
             policies={policies}
+            documents={documents}
             isLoadingPolicies={isLoadingPolicies}
+            isLoadingDocuments={isLoadingDocuments}
             onClose={handleCloseProfileModal}
             onDeleteCustomer={handleDeleteClick}
             onEditCustomer={(customer) => {
@@ -334,15 +405,11 @@ export default function Customers() {
             onDeletePolicy={(policy) => {
               console.log("Delete policy:", policy.id);
             }}
-            onDownloadDocument={(policy) => {
-              console.log("Download document for policy:", policy.id);
-            }}
+            onDownloadDocument={handleDownloadDocument}
             onDeleteDocument={(policy) => {
               console.log("Delete document for policy:", policy.id);
             }}
-            onUploadDocument={(policy) => {
-              console.log("Upload document for policy:", policy.id);
-            }}
+            onUploadDocument={handleUploadDocument}
           />
         )}
       </Modal>
