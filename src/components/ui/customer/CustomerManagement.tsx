@@ -146,7 +146,7 @@ export const CustomerManagement = ({
                     Loading documents...
                   </p>
                 </div>
-              ) : documents.length === 0 ? (
+              ) : Object.keys(documents).length === 0 ? (
                 <div className="text-center py-6">
                   <p className="text-gray-600 dark:text-gray-400">
                     No policies found for this customer.

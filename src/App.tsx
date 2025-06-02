@@ -35,6 +35,7 @@ import Analysis from "./components/admin/Analysis";
 import Graphs from "./components/admin/Graphs";
 import AdminPolicies from "./components/admin/Policies";
 import Customers from "./components/admin/Customers";
+import GithubCallback from "./components/auth/GithubCallback";
 
 export default function App() {
   return (
@@ -57,6 +58,7 @@ export default function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/auth/github/callback" element={<GithubCallback />} />
 
           {/* Customer Routes */}
           <Route element={<AppLayout />}>

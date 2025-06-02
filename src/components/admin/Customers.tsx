@@ -385,7 +385,7 @@ export default function Customers() {
         onClose={handleCloseProfileModal}
         className="max-w-[900px] m-4 z-[9999]"
         showCloseButton={false}
-        // isFullscreen={true}
+        isFullscreen={true}
       >
         {selectedCustomer && (
           <CustomerManagement

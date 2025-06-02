@@ -74,6 +74,42 @@ export const login = createAsyncThunk(
   }
 );
 
+export const googleLogin = createAsyncThunk(
+  "auth/googleLogin",
+  async (token: string, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await apiService.post("/auth/google", { token });
+      const { token: authToken }: { token: string } = response?.data as {
+        token: string;
+      };
+      localStorage.setItem("token", authToken);
+      await dispatch(fetchUserProfile());
+      return authToken;
+    } catch (error) {
+      const apiError = error as ApiError;
+      return rejectWithValue(apiError.response?.data || "Google login failed");
+    }
+  }
+);
+
+export const githubLogin = createAsyncThunk(
+  "auth/githubLogin",
+  async (code: string, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await apiService.post("/auth/github", { code });
+      const { token: authToken }: { token: string } = response?.data as {
+        token: string;
+      };
+      localStorage.setItem("token", authToken);
+      await dispatch(fetchUserProfile());
+      return authToken;
+    } catch (error) {
+      const apiError = error as ApiError;
+      return rejectWithValue(apiError.response?.data || "GitHub login failed");
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -124,6 +160,30 @@ const authSlice = createSlice({
         state.user = action.payload;
       })
       .addCase(fetchUserProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(googleLogin.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(googleLogin.fulfilled, (state, action) => {
+        state.loading = false;
+        state.token = action.payload;
+      })
+      .addCase(googleLogin.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(githubLogin.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(githubLogin.fulfilled, (state, action) => {
+        state.loading = false;
+        state.token = action.payload;
+      })
+      .addCase(githubLogin.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

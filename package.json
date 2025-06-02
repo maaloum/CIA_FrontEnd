@@ -19,6 +19,7 @@
     "@headlessui/react": "^2.2.4",
     "@react-jvectormap/core": "^1.0.4",
     "@react-jvectormap/world": "^1.1.2",
+    "@react-oauth/google": "^0.12.2",
     "@reduxjs/toolkit": "^2.8.2",
     "@types/leaflet": "^1.9.18",
     "@types/recharts": "^1.8.29",
