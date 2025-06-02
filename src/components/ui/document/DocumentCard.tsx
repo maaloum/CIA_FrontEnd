@@ -12,6 +12,7 @@ export const DocumentCard = ({
   onDownload,
   onDelete,
 }: DocumentCardProps) => {
+  console.log({ document });
   const getFileIcon = (fileType: string) => {
     if (fileType.includes("pdf")) return "📄";
     if (fileType.includes("image")) return "🖼️";

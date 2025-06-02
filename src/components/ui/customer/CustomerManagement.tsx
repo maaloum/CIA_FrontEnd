@@ -5,6 +5,7 @@ import { PolicyCard } from "../policy/PolicyCard";
 import { DocumentCard } from "../document/DocumentCard";
 import { Policy } from "../../../types/policy";
 import { Document } from "../../../services/documentService";
+import { Button } from "../..//ui/button/Button";
 
 interface CustomerPanelProps {
   customer: Customer;
@@ -109,6 +110,10 @@ export const CustomerManagement = ({
 
           <Tab.Panel>
             <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <p></p>
+                <Button variant="primary">Add New Policy</Button>
+              </div>
               {isLoadingPolicies ? (
                 <div className="text-center py-6">
                   <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-brand-600 mx-auto" />

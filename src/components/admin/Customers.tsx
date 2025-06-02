@@ -19,6 +19,7 @@ import { Policy } from "../../types/policy";
 import { CustomerManagement } from "../ui/customer/CustomerManagement";
 import ConfirmationPopup from "../ui/popup/ConfirmationPopup";
 import { AddCustomer, CustomerFormData } from "../ui/customer/AddCustomer";
+import { EditCustomer } from "../ui/customer/EditCustomer";
 
 export default function Customers() {
   const dispatch = useDispatch<AppDispatch>();
@@ -42,6 +43,8 @@ export default function Customers() {
   const [isLoadingPolicies, setIsLoadingPolicies] = useState(false);
   const [documents, setDocuments] = useState<{ [key: string]: Document[] }>({});
   const [isLoadingDocuments, setIsLoadingDocuments] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     fetchCustomers();
@@ -144,6 +147,7 @@ export default function Customers() {
   const handleDeleteClick = (customer: Customer) => {
     setCustomerToDelete(customer);
     setShowDeletePopup(true);
+    setShowProfileModal(false);
     hideHeader();
   };
 
@@ -167,6 +171,12 @@ export default function Customers() {
       setShowDeletePopup(false);
       showHeader();
     }
+  };
+
+  const handleCloseDeletePopup = () => {
+    setShowDeletePopup(false);
+    setCustomerToDelete(null);
+    showHeader();
   };
 
   const handleDownloadDocument = async (document: Document) => {
@@ -217,6 +227,50 @@ export default function Customers() {
     } catch (error) {
       console.error("Error uploading documents:", error);
       toast.error("Failed to upload documents");
+    }
+  };
+
+  const handleEditCustomer = async (customer: Customer) => {
+    setSelectedCustomer(customer);
+    setShowEditModal(true);
+    hideHeader();
+  };
+
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
+    // Don't reset selectedCustomer or show header since we want to stay in the profile view
+  };
+
+  const handleUpdateCustomer = async (updatedData: Partial<Customer>) => {
+    if (!token || !selectedCustomer) return;
+
+    try {
+      setIsEditing(true);
+      const updatedCustomer = await customerService.updateCustomer(
+        selectedCustomer.id,
+        updatedData,
+        token
+      );
+
+      // Update the customer in the local state
+      setCustomers((prevCustomers) =>
+        prevCustomers.map((customer) =>
+          customer.id === selectedCustomer.id ? updatedCustomer : customer
+        )
+      );
+
+      // Update the selected customer if it's currently being viewed
+      if (showProfileModal) {
+        setSelectedCustomer(updatedCustomer);
+      }
+
+      toast.success("Customer updated successfully");
+      setShowEditModal(false); // Just close the edit modal
+    } catch (error) {
+      console.error("Error updating customer:", error);
+      toast.error("Failed to update customer");
+    } finally {
+      setIsEditing(false);
     }
   };
 
@@ -396,9 +450,7 @@ export default function Customers() {
             isLoadingDocuments={isLoadingDocuments}
             onClose={handleCloseProfileModal}
             onDeleteCustomer={handleDeleteClick}
-            onEditCustomer={(customer) => {
-              console.log("Edit customer:", customer.id);
-            }}
+            onEditCustomer={handleEditCustomer}
             onEditPolicy={(policy) => {
               console.log("Edit policy:", policy.id);
             }}
@@ -414,14 +466,25 @@ export default function Customers() {
         )}
       </Modal>
 
-      {/* Delete Confirmation Modal */}
+      {/* Edit Customer Modal */}
+      <Modal
+        isOpen={showEditModal}
+        onClose={handleCloseEditModal}
+        className="max-w-[700px] m-4 z-[9999]"
+      >
+        {selectedCustomer && (
+          <EditCustomer
+            customer={selectedCustomer}
+            onSubmit={handleUpdateCustomer}
+            onClose={handleCloseEditModal}
+            loading={isEditing}
+          />
+        )}
+      </Modal>
+
       <ConfirmationPopup
         isOpen={showDeletePopup}
-        onClose={() => {
-          setShowDeletePopup(false);
-          setCustomerToDelete(null);
-          showHeader();
-        }}
+        onClose={handleCloseDeletePopup}
         onConfirm={handleDeleteConfirm}
         title="Delete Customer"
         message={`Are you sure you want to delete ${customerToDelete?.firstName} ${customerToDelete?.lastName}? This action cannot be undone.`}
