@@ -246,7 +246,7 @@ export default function CustomerList() {
             onChange={(e) =>
               setSelectedStatus(e.target.value as CustomerStatus | "all")
             }
-            className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700"
+            className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             aria-label="Filter by status"
           >
             <option value="all">All Status</option>

@@ -9,6 +9,8 @@ interface InsuranceCompany {
   logo: string;
   website: string;
   apiKey: string;
+  contactName: string;
+  apiEndpoint: string;
   status: "active" | "inactive";
   products: {
     home: boolean;
@@ -31,6 +33,8 @@ export default function InsuranceIntegrations() {
       logo: "https://via.placeholder.com/40",
       website: "https://insurance-co-a.com",
       apiKey: "••••••••••••••••",
+      contactName: "John Smith",
+      apiEndpoint: "https://api.insurance-co-a.com/v1",
       status: "active",
       products: {
         home: true,
@@ -46,6 +50,8 @@ export default function InsuranceIntegrations() {
       logo: "https://via.placeholder.com/40",
       website: "https://insurance-co-b.com",
       apiKey: "••••••••••••••••",
+      contactName: "Sarah Johnson",
+      apiEndpoint: "https://api.insurance-co-b.com/v2",
       status: "active",
       products: {
         home: true,
@@ -118,6 +124,12 @@ export default function InsuranceIntegrations() {
                 Company
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                Contact
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                API Endpoint
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
                 Products
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
@@ -158,6 +170,19 @@ export default function InsuranceIntegrations() {
                       </div>
                     </div>
                   </div>
+                </td>
+                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                  {company.contactName}
+                </td>
+                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                  <a
+                    href={company.apiEndpoint}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-brand-600 hover:text-brand-900 dark:text-brand-400 dark:hover:text-brand-300"
+                  >
+                    {company.apiEndpoint}
+                  </a>
                 </td>
                 <td className="whitespace-nowrap px-6 py-4">
                   <div className="flex flex-wrap gap-2">
