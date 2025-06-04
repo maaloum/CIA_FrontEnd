@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "../../icons";
+import { EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
+import logo from "/logo.png";
 import {
   login,
   clearError,
@@ -11,6 +12,7 @@ import {
   // githubLogin,
 } from "../../store/slices/authSlice";
 import { RootState, AppDispatch } from "../../store";
+import Avatar from "../ui/avatar/Avatar";
 
 // interface GoogleOAuthResponse {
 //   access_token: string;
@@ -197,7 +199,7 @@ export default function SignInForm() {
                 </span>
               </div>
             </div>
-{/* 
+            {/* 
             <div className="grid grid-cols-2 gap-3 mt-6">
               <button
                 onClick={handleGoogleSignIn}

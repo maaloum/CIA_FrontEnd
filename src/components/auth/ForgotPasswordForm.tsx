@@ -30,6 +30,7 @@ export default function ForgotPasswordForm() {
       }
     } catch (err) {
       setError("Failed to send reset password email. Please try again.");
+      console.log(err);
     } finally {
       setLoading(false);
     }
