@@ -59,11 +59,18 @@ export const login = createAsyncThunk(
   async (data: LoginData, { dispatch, rejectWithValue }) => {
     try {
       const response = await apiService.post("/auth/login", data);
+      // const munite = 1;
+      // const now = new Date().getTime();
       const { token }: { token: string } = response?.data as { token: string };
 
       console.log("data", response?.data);
       localStorage.setItem("token", token);
-      // Fetch user profile after successful login
+
+      // setTimeout(() => {
+      //   localStorage.removeItem("token");
+      //   console.log("Token cleared after 2 minutes");
+      //   dispatch(logout()); 
+      // }, 60 * 1000);
       await dispatch(fetchUserProfile());
       return token;
     } catch (error) {

@@ -39,7 +39,6 @@ export default function AddProductModal({
     actualPrice: 0,
   });
 
-
   const [availablePartners, setAvailablePartners] = useState<Partner[]>([]);
   const [isLoadingPartners, setIsLoadingPartners] = useState(false);
   const [partnerError, setPartnerError] = useState<string | null>(null);
@@ -72,7 +71,6 @@ export default function AddProductModal({
     }
   };
 
-  console.log({ availablePartners });
   const handleRequirementChange = (index: number, value: string) => {
     const updatedRequirements = [...newProduct.requirements];
     updatedRequirements[index] = value;
@@ -250,12 +248,11 @@ export default function AddProductModal({
                           className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:border-gray-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
                         >
                           <option value="">Select a partner</option>
-                          {availablePartners
-                            .map((partner) => (
-                              <option key={partner.id} value={partner.id}>
-                                {partner.name}
-                              </option>
-                            ))}
+                          {availablePartners.map((partner) => (
+                            <option key={partner.id} value={partner.id}>
+                              {partner.name}
+                            </option>
+                          ))}
                         </select>
                         {index > 0 && (
                           <button

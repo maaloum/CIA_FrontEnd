@@ -20,8 +20,10 @@ import Graphs from "./components/admin/Graphs";
 import AdminPolicies from "./components/admin/Policies";
 import Customers from "./components/admin/Customers";
 import GithubCallback from "./components/auth/GithubCallback";
+import useInactivityLogout from "./hooks/useInactivityLogout";
 
 export default function App() {
+  useInactivityLogout();
   return (
     <>
       <Router>

@@ -5,10 +5,14 @@ import { useSidebar } from "../context/SidebarContext";
 import { ThemeToggleButton } from "../components/common/ThemeToggleButton";
 import NotificationDropdown from "../components/header/NotificationDropdown";
 import UserDropdown from "../components/header/UserDropdown";
+import { useSelector } from "react-redux";
+import { RootState } from "../store";
 
 const AppHeader: React.FC = () => {
   const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
 
+  const { user } = useSelector((state: RootState) => state.auth);
+  const role = user?.role?.toLowerCase() || "";
   const { isMobileOpen, toggleSidebar, toggleMobileSidebar } = useSidebar();
 
   const handleToggle = () => {
@@ -158,9 +162,9 @@ const AppHeader: React.FC = () => {
           <div className="flex items-center gap-2 2xsm:gap-3">
             {/* <!-- Dark Mode Toggler --> */}
             <ThemeToggleButton />
-            {/* <!-- Dark Mode Toggler --> */}
-            <NotificationDropdown />
+
             {/* <!-- Notification Menu Area --> */}
+            {role === "customer" && <NotificationDropdown />}
           </div>
           {/* <!-- User Area --> */}
           <UserDropdown />

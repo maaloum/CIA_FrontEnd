@@ -133,7 +133,6 @@ export default function CustomerList() {
     }
   };
 
-  console.log({ documents });
 
   const handleCloseProfileModal = () => {
     setShowProfileModal(false);
