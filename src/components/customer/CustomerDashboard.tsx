@@ -33,7 +33,7 @@ interface Notification {
 
 export default function CustomerDashboard() {
   const user = useSelector((state: RootState) => state.auth.user);
-  const [notifications, setNotifications] = useState<Notification[]>([
+  const [notifications] = useState<Notification[]>([
     {
       id: "1",
       type: "reminder",
@@ -52,7 +52,7 @@ export default function CustomerDashboard() {
     },
   ]);
 
-  const [policies, setPolicies] = useState<Policy[]>([
+  const [policies] = useState<Policy[]>([
     {
       id: "1",
       type: "car",

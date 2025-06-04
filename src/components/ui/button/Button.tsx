@@ -5,13 +5,15 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "outline";
   size?: "sm" | "md" | "lg";
   className?: string;
+  startIcon?: ReactNode;
 }
 
-export default function Button({
+export function Button({
   children,
   variant = "primary",
   size = "md",
   className = "",
+  startIcon,
   ...props
 }: ButtonProps) {
   const baseStyles =
@@ -34,6 +36,7 @@ export default function Button({
       className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`}
       {...props}
     >
+      {startIcon && <span className="mr-2">{startIcon}</span>}
       {children}
     </button>
   );

@@ -3,7 +3,7 @@ import { Link } from "react-router";
 // import { useDispatch } from "react-redux";
 import { ChevronLeftIcon } from "../../icons";
 import Label from "../form/Label";
-import Input from "../form/input/InputField";
+import { Input } from "../ui/input/Input";
 // import { AppDispatch } from "../../store";
 import { apiService } from "../../services/api";
 
@@ -30,6 +30,7 @@ export default function ForgotPasswordForm() {
       }
     } catch (err) {
       setError("Failed to send reset password email. Please try again.");
+      console.log(err);
     } finally {
       setLoading(false);
     }
@@ -37,7 +38,7 @@ export default function ForgotPasswordForm() {
 
   return (
     <div className="flex flex-col flex-1 w-full overflow-y-auto lg:w-1/2 no-scrollbar">
-      <div className="w-full max-w-md mx-auto mb-5 sm:pt-10">
+      <div className="w-full max-w-md mx-auto sm:pt-10">
         <Link
           to="/signin"
           className="inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"

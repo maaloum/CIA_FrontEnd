@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { RootState } from "../store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../store";
 
 // Assume these icons are imported from an icon library
 import {
@@ -18,6 +18,7 @@ import {
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
 import SidebarWidget from "./SidebarWidget";
+import { fetchUserProfile } from "../store/slices/authSlice";
 
 type NavItem = {
   name: string;
@@ -29,10 +30,13 @@ type NavItem = {
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const location = useLocation();
-  const { user } = useSelector((state: RootState) => state.auth);
-
-  console.log("User from Redux:", user);
-  console.log("User role:", user?.role);
+  const { user, token } = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch<AppDispatch>();
+  useEffect(() => {
+    if (token) {
+      dispatch(fetchUserProfile());
+    }
+  }, [token, dispatch]);
 
   const customerNavItems: NavItem[] = [
     {
@@ -112,7 +116,6 @@ const AppSidebar: React.FC = () => {
   useEffect(() => {
     let submenuMatched = false;
     const items = user?.role === "ADMIN" ? adminNavItems : customerNavItems;
-    console.log("Selected nav items:", items);
 
     items.forEach((nav, index) => {
       if (nav.subItems) {

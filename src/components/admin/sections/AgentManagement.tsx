@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ListIcon, PencilIcon, TrashBinIcon } from "../../../icons";
 import Input from "../../form/input/InputField";
 import Button from "../../ui/Button";
+import AddAgentForm, { AgentFormData } from "./AddAgentForm";
 
 interface Agent {
   id: string;
@@ -20,9 +21,10 @@ interface Agent {
 export default function AgentManagement() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("all");
+  const [isAddAgentFormOpen, setIsAddAgentFormOpen] = useState(false);
 
   // Mock data - replace with actual API call
-  const agents: Agent[] = [
+  const [agents, setAgents] = useState<Agent[]>([
     {
       id: "1",
       firstName: "Jane",
@@ -37,7 +39,21 @@ export default function AgentManagement() {
       },
     },
     // Add more mock data as needed
-  ];
+  ]);
+
+  const handleAddAgent = (agentData: AgentFormData) => {
+    const newAgent: Agent = {
+      id: Math.random().toString(36).substr(2, 9), // Generate random ID
+      ...agentData,
+      performance: {
+        sales: 0,
+        applications: 0,
+        conversionRate: 0,
+      },
+    };
+    setAgents((prev) => [...prev, newAgent]);
+    setIsAddAgentFormOpen(false);
+  };
 
   const filteredAgents = agents.filter((agent) => {
     const matchesSearch =
@@ -66,14 +82,16 @@ export default function AgentManagement() {
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700"
+            className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             aria-label="Filter by status"
           >
             <option value="all">All Status</option>
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
-          <Button variant="primary">Add Agent</Button>
+          <Button variant="primary" onClick={() => setIsAddAgentFormOpen(true)}>
+            Add Agent
+          </Button>
         </div>
       </div>
 
@@ -157,6 +175,12 @@ export default function AgentManagement() {
           </tbody>
         </table>
       </div>
+
+      <AddAgentForm
+        isOpen={isAddAgentFormOpen}
+        onClose={() => setIsAddAgentFormOpen(false)}
+        onSubmit={handleAddAgent}
+      />
     </div>
   );
 }

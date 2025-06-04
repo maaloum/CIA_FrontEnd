@@ -1,6 +1,6 @@
 import { ApiResponse } from "../types/api";
 
-const API_BASE_URL = "https://cia-backend-shfd.onrender.com/api/v1";
+const API_BASE_URL = "http://localhost:8080/api/v1";
 
 export class ApiService {
   private baseUrl: string;
@@ -50,8 +50,8 @@ export class ApiService {
         status: response.status,
         message: "Success",
       };
-    } catch (error) {
-      throw new Error("Failed to parse response");
+    } catch {
+      throw new Error(" Failed to parse response");
     }
   }
 

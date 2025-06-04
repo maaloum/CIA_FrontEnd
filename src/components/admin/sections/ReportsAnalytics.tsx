@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   ListIcon,
   DownloadIcon,
@@ -7,6 +7,7 @@ import {
 } from "../../../icons";
 import Input from "../../form/input/InputField";
 import Button from "../../ui/Button";
+import * as XLSX from "xlsx";
 
 interface AnalyticsData {
   totalPolicies: number;
@@ -49,6 +50,15 @@ export default function ReportsAnalytics() {
       { month: "Jan", revenue: 115000, policies: 85 },
       { month: "Feb", revenue: 125000, policies: 92 },
       { month: "Mar", revenue: 135000, policies: 98 },
+      { month: "Apr", revenue: 145000, policies: 105 },
+      { month: "May", revenue: 155000, policies: 112 },
+      { month: "Jun", revenue: 165000, policies: 120 },
+      { month: "Jul", revenue: 175000, policies: 125 },
+      { month: "Aug", revenue: 185000, policies: 130 },
+      { month: "Sep", revenue: 195000, policies: 135 },
+      { month: "Oct", revenue: 205000, policies: 140 },
+      { month: "Nov", revenue: 215000, policies: 145 },
+      { month: "Dec", revenue: 225000, policies: 150 },
     ],
     topPerformingAgents: [
       { name: "John Smith", policies: 45, revenue: 45000 },
@@ -64,6 +74,107 @@ export default function ReportsAnalytics() {
       notation: "compact",
       maximumFractionDigits: 1,
     }).format(amount);
+  };
+
+  // Filter data based on selected date range
+  const filteredData = useMemo(() => {
+    let startIndex = 0;
+    switch (dateRange) {
+      case "week":
+        startIndex = Math.max(0, analyticsData.monthlyTrends.length - 1);
+        break;
+      case "month":
+        startIndex = Math.max(0, analyticsData.monthlyTrends.length - 1);
+        break;
+      case "quarter":
+        startIndex = Math.max(0, analyticsData.monthlyTrends.length - 3);
+        break;
+      case "year":
+        startIndex = 0;
+        break;
+    }
+
+    const filteredTrends = analyticsData.monthlyTrends.slice(startIndex);
+
+    // Calculate totals for the filtered period
+    const totalRevenue = filteredTrends.reduce(
+      (sum, trend) => sum + trend.revenue,
+      0
+    );
+    const totalPolicies = filteredTrends.reduce(
+      (sum, trend) => sum + trend.policies,
+      0
+    );
+
+    // Calculate monthly revenue (average of the period)
+    const monthlyRevenue = totalRevenue / filteredTrends.length;
+
+    return {
+      ...analyticsData,
+      totalRevenue,
+      monthlyRevenue,
+      totalPolicies,
+      monthlyTrends: filteredTrends,
+    };
+  }, [dateRange, analyticsData]);
+
+  const handleExportToExcel = () => {
+    // Prepare data for export
+    const exportData = {
+      "Key Metrics": [
+        [
+          "Total Policies",
+          "Active Policies",
+          "Total Revenue",
+          "Monthly Revenue",
+        ],
+        [
+          filteredData.totalPolicies,
+          filteredData.activePolicies,
+          formatCurrency(filteredData.totalRevenue),
+          formatCurrency(filteredData.monthlyRevenue),
+        ],
+      ],
+      "Policy Distribution": [
+        ["Type", "Count", "Percentage"],
+        ...filteredData.policyDistribution.map((dist) => [
+          dist.type,
+          dist.count,
+          `${dist.percentage}%`,
+        ]),
+      ],
+      "Monthly Trends": [
+        ["Month", "Revenue", "Policies"],
+        ...filteredData.monthlyTrends.map((trend) => [
+          trend.month,
+          formatCurrency(trend.revenue),
+          trend.policies,
+        ]),
+      ],
+      "Top Performing Agents": [
+        ["Agent Name", "Policies Sold", "Revenue Generated"],
+        ...filteredData.topPerformingAgents.map((agent) => [
+          agent.name,
+          agent.policies,
+          formatCurrency(agent.revenue),
+        ]),
+      ],
+    };
+
+    // Create workbook
+    const wb = XLSX.utils.book_new();
+
+    // Add each sheet to workbook
+    Object.entries(exportData).forEach(([sheetName, data]) => {
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      XLSX.utils.book_append_sheet(wb, ws, sheetName);
+    });
+
+    // Generate Excel file
+    const fileName = `Analytics_Report_${
+      new Date().toISOString().split("T")[0]
+    }.xlsx`;
+    XLSX.writeFile(wb, fileName);
   };
 
   return (
@@ -92,7 +203,11 @@ export default function ReportsAnalytics() {
             <option value="quarter">Last Quarter</option>
             <option value="year">Last Year</option>
           </select>
-          <Button variant="outline" className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            className="flex items-center gap-2"
+            onClick={handleExportToExcel}
+          >
             <DownloadIcon className="h-5 w-5" />
             Export Report
           </Button>
@@ -109,10 +224,10 @@ export default function ReportsAnalytics() {
             </h3>
           </div>
           <p className="mt-2 text-2xl font-semibold text-gray-900 dark:text-white">
-            {analyticsData.totalPolicies}
+            {filteredData.totalPolicies}
           </p>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            {analyticsData.activePolicies} active
+            {filteredData.activePolicies} active
           </p>
         </div>
         <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
@@ -123,10 +238,10 @@ export default function ReportsAnalytics() {
             </h3>
           </div>
           <p className="mt-2 text-2xl font-semibold text-gray-900 dark:text-white">
-            {formatCurrency(analyticsData.totalRevenue)}
+            {formatCurrency(filteredData.totalRevenue)}
           </p>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            {formatCurrency(analyticsData.monthlyRevenue)} this month
+            {formatCurrency(filteredData.monthlyRevenue)} avg/month
           </p>
         </div>
         <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
@@ -137,7 +252,7 @@ export default function ReportsAnalytics() {
             </h3>
           </div>
           <div className="mt-2 space-y-2">
-            {analyticsData.policyDistribution.map((dist) => (
+            {filteredData.policyDistribution.map((dist) => (
               <div
                 key={dist.type}
                 className="flex items-center justify-between"
@@ -160,7 +275,7 @@ export default function ReportsAnalytics() {
             </h3>
           </div>
           <div className="mt-2 space-y-2">
-            {analyticsData.monthlyTrends.map((trend) => (
+            {filteredData.monthlyTrends.map((trend) => (
               <div
                 key={trend.month}
                 className="flex items-center justify-between"
@@ -200,7 +315,7 @@ export default function ReportsAnalytics() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
-              {analyticsData.topPerformingAgents.map((agent) => (
+              {filteredData.topPerformingAgents.map((agent) => (
                 <tr key={agent.name}>
                   <td className="whitespace-nowrap px-6 py-4">
                     <div className="text-sm font-medium text-gray-900 dark:text-white">

@@ -1,57 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { apiService } from "../../services/api";
-
-interface RegisterData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  address: string;
-  dateOfBirth: string;
-  communicationPref: string;
-  password: string;
-  gender: string;
-  status: string;
-}
-
-interface LoginData {
-  email: string;
-  password: string;
-}
-
-interface User {
-  role: "ADMIN" | "CUSTOMER" | "AGENT";
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  address: string;
-  dateOfBirth: string;
-  communicationPref: string;
-  gender: string;
-  status: string;
-}
-
-interface RegisterResponse {
-  user: User;
-  token: string;
-}
-
-interface AuthState {
-  user: User | null;
-  token: string | null;
-  loading: boolean;
-  error: string | null;
-}
-
-interface ApiError {
-  response?: {
-    data?: {
-      message?: string;
-    };
-  };
-}
+import {
+  RegisterData,
+  LoginData,
+  User,
+  RegisterResponse,
+  AuthState,
+  ApiError,
+} from "../../types/auth";
 
 const initialState: AuthState = {
   user: null,
@@ -82,41 +38,81 @@ export const fetchUserProfile = createAsyncThunk(
   }
 );
 
-export const register = createAsyncThunk(
-  "auth/register",
-  async (data: RegisterData, { rejectWithValue }) => {
-    try {
-      const response = await apiService.post<RegisterResponse, RegisterData>(
-        "/auth/register",
-        data
-      );
-      return response.data;
-    } catch (error) {
-      const apiError = error as ApiError;
-      return rejectWithValue(
-        apiError.response?.data?.message || "Registration failed"
-      );
-    }
+export const register = createAsyncThunk<
+  RegisterResponse,
+  RegisterData,
+  { rejectValue: string }
+>("auth/register", async (data, { rejectWithValue }) => {
+  try {
+    const response = await apiService.post("/auth/register", data);
+    return response.data as RegisterResponse;
+  } catch (error) {
+    const apiError = error as ApiError;
+    const message = apiError.response?.data?.message ?? "Registration failed";
+
+    return rejectWithValue(message);
   }
-);
+});
 
 export const login = createAsyncThunk(
   "auth/login",
   async (data: LoginData, { dispatch, rejectWithValue }) => {
     try {
-      const response = await apiService.post<{ token: string }, LoginData>(
-        "/auth/login",
-        data
-      );
-      const { token } = response.data;
+      const response = await apiService.post("/auth/login", data);
+      // const munite = 1;
+      // const now = new Date().getTime();
+      const { token }: { token: string } = response?.data as { token: string };
+
+      console.log("data", response?.data);
       localStorage.setItem("token", token);
-      // Fetch user profile after successful login
+
+      // setTimeout(() => {
+      //   localStorage.removeItem("token");
+      //   console.log("Token cleared after 2 minutes");
+      //   dispatch(logout()); 
+      // }, 60 * 1000);
       await dispatch(fetchUserProfile());
       return token;
     } catch (error) {
       const apiError = error as ApiError;
       console.log("error is ", apiError.response?.data);
       return rejectWithValue(apiError.response?.data || "Login failed");
+    }
+  }
+);
+
+export const googleLogin = createAsyncThunk(
+  "auth/googleLogin",
+  async (token: string, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await apiService.post("/auth/google", { token });
+      const { token: authToken }: { token: string } = response?.data as {
+        token: string;
+      };
+      localStorage.setItem("token", authToken);
+      await dispatch(fetchUserProfile());
+      return authToken;
+    } catch (error) {
+      const apiError = error as ApiError;
+      return rejectWithValue(apiError.response?.data || "Google login failed");
+    }
+  }
+);
+
+export const githubLogin = createAsyncThunk(
+  "auth/githubLogin",
+  async (code: string, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await apiService.post("/auth/github", { code });
+      const { token: authToken }: { token: string } = response?.data as {
+        token: string;
+      };
+      localStorage.setItem("token", authToken);
+      await dispatch(fetchUserProfile());
+      return authToken;
+    } catch (error) {
+      const apiError = error as ApiError;
+      return rejectWithValue(apiError.response?.data || "GitHub login failed");
     }
   }
 );
@@ -171,6 +167,30 @@ const authSlice = createSlice({
         state.user = action.payload;
       })
       .addCase(fetchUserProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(googleLogin.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(googleLogin.fulfilled, (state, action) => {
+        state.loading = false;
+        state.token = action.payload;
+      })
+      .addCase(googleLogin.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(githubLogin.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(githubLogin.fulfilled, (state, action) => {
+        state.loading = false;
+        state.token = action.payload;
+      })
+      .addCase(githubLogin.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

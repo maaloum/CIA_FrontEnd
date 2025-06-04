@@ -1,6 +1,7 @@
 import { apiService } from "./api";
 
 export interface Customer {
+  numberOfPolicies: number;
   id: string;
   firstName: string;
   lastName: string;
@@ -8,6 +9,12 @@ export interface Customer {
   phone: string;
   status: string;
   insuranceCount: number;
+  address: string;
+  customer: {
+    dateOfBirth: string;
+    communicationPref: string;
+  };
+  gender: "male" | "female" | "other" | "prefer_not_to_say";
 }
 
 export const customerService = {

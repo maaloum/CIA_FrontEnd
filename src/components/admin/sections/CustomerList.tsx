@@ -1,13 +1,41 @@
 import { useState, useEffect } from "react";
 import { ListIcon } from "../../../icons";
 import Input from "../../form/input/InputField";
-import Button from "../../ui/Button";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../store";
 import { customerService, Customer } from "../../../services/customerService";
-import ConfirmationPopup from "../../ui/popup/ConfirmationPopup";
+import Button from "../../ui/Button";
+import { Modal } from "../../ui/modal";
+import { Tab } from "@headlessui/react";
+import Label from "../../form/Label";
+import { useHeader } from "../../../context/HeaderContext";
+import { policyService } from "../../../services/policyService";
+import toast from "react-hot-toast";
+import { documentService } from "../../../services/documentService";
+import { DocumentCard } from "../../ui/document/DocumentCard";
+import { CustomerManagement } from "../../ui/customer/CustomerManagement";
 
 type CustomerStatus = "ACTIVE" | "INACTIVE" | "PENDING";
+
+interface Policy {
+  id: string;
+  type: "home" | "car" | "life";
+  policyNumber: string;
+  startDate: string;
+  endDate: string;
+  price: number;
+  coverage: string;
+  status: "active" | "pending" | "expired";
+  premium: number;
+  paymentFrequency: "monthly" | "quarterly" | "annually";
+  nextPaymentDate: string;
+  documents: {
+    id: string;
+    name: string;
+    type: string;
+    url: string;
+  }[];
+}
 
 export default function CustomerList() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -17,12 +45,16 @@ export default function CustomerList() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [showDeletePopup, setShowDeletePopup] = useState(false);
-  const [customerToDelete, setCustomerToDelete] = useState<Customer | null>(
+  const { token } = useSelector((state: RootState) => state.auth);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
     null
   );
-  const { token } = useSelector((state: RootState) => state.auth);
+  const [policies, setPolicies] = useState<Policy[]>([]);
+  const [isLoadingPolicies, setIsLoadingPolicies] = useState(false);
+  const [documents, setDocuments] = useState<{ [key: string]: Document[] }>({});
+  const [isLoadingDocuments, setIsLoadingDocuments] = useState(false);
+  const { hideHeader, showHeader } = useHeader();
 
   const fetchCustomers = async () => {
     if (!token) {
@@ -34,6 +66,7 @@ export default function CustomerList() {
     try {
       setLoading(true);
       const data = await customerService.getCustomers(token);
+
       setCustomers(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
@@ -46,40 +79,6 @@ export default function CustomerList() {
     fetchCustomers();
   }, [token]);
 
-  const handleDeleteClick = (customer: Customer) => {
-    setCustomerToDelete(customer);
-    setShowDeletePopup(true);
-  };
-
-  const handleDeleteConfirm = async () => {
-    if (!token || !customerToDelete) {
-      return;
-    }
-
-    try {
-      setDeletingId(customerToDelete.id);
-      const response = await customerService.deleteCustomer(
-        customerToDelete.id,
-        token
-      );
-
-      // Remove the deleted customer from the local state
-      setCustomers((prevCustomers) =>
-        prevCustomers.filter((customer) => customer.id !== customerToDelete.id)
-      );
-
-      // Show success message (you might want to add a toast notification here)
-      console.log(response.message);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to delete customer"
-      );
-    } finally {
-      setDeletingId(null);
-      setCustomerToDelete(null);
-    }
-  };
-
   const filteredCustomers = customers.filter((customer) => {
     const matchesSearch =
       customer.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -87,9 +86,90 @@ export default function CustomerList() {
       customer.email.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus =
       selectedStatus === "all" || customer.status === selectedStatus;
+
     return matchesSearch && matchesStatus;
   });
 
+  const handleViewProfile = async (customer: Customer) => {
+    if (!token) {
+      toast.error("Authentication token is missing");
+      return;
+    }
+
+    setSelectedCustomer(customer);
+    setShowProfileModal(true);
+    hideHeader();
+    setIsLoadingPolicies(true);
+    setIsLoadingDocuments(true);
+    try {
+      const policyData = await policyService.getPolicyById(customer.id, token);
+
+      const documentsDataArray = await Promise.all(
+        policyData.map((policy) =>
+          documentService.getPolicyDocuments(policy.id, token)
+        )
+      );
+
+      // Create a flat map of documents by policyId
+      const documentsByPolicyId = {};
+      policyData.forEach((policy, index) => {
+        documentsByPolicyId[policy.id] = Array.isArray(
+          documentsDataArray[index]
+        )
+          ? documentsDataArray[index].flat() // just in case
+          : [];
+      });
+
+      setPolicies(policyData);
+      setDocuments(documentsByPolicyId);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      toast.error("Failed to load policy details");
+      setPolicies([]);
+      setDocuments({});
+    } finally {
+      setIsLoadingPolicies(false);
+      setIsLoadingDocuments(false);
+    }
+  };
+
+
+  const handleCloseProfileModal = () => {
+    setShowProfileModal(false);
+    showHeader();
+  };
+
+  const handleUploadDocument = async (policy: Policy, files: File[]) => {
+    if (!token) {
+      toast.error("Authentication token is missing");
+      return;
+    }
+
+    try {
+      const uploadedDocuments = await documentService.uploadDocuments(
+        files,
+        policy.id,
+        policy.application.id,
+        token
+      );
+
+      setDocuments((prev) => ({
+        ...prev,
+        [policy.id]: [...(prev[policy.id] || []), ...uploadedDocuments],
+      }));
+
+      toast.success("Documents uploaded successfully");
+    } catch (error) {
+      console.error("Error uploading documents:", error);
+      toast.error("Failed to upload documents");
+    }
+  };
+
+  const handleDeleteClick = (customer: Customer) => {
+    setCustomerToDelete(customer);
+    setShowDeletePopup(true);
+    hideHeader();
+  };
   const getStatusColor = (status: string) => {
     switch (status) {
       case "ACTIVE":
@@ -99,7 +179,7 @@ export default function CustomerList() {
       case "PENDING":
         return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
       default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
+        return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200";
     }
   };
 
@@ -121,6 +201,31 @@ export default function CustomerList() {
     );
   }
 
+  const handleDownloadDocument = async (document: Document) => {
+    try {
+      const response = await fetch(document.url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error("Download failed");
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = document.fileName;
+      document.body.appendChild(link);
+      link.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error downloading document:", error);
+      toast.error("Failed to download document");
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -140,7 +245,7 @@ export default function CustomerList() {
             onChange={(e) =>
               setSelectedStatus(e.target.value as CustomerStatus | "all")
             }
-            className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700"
+            className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             aria-label="Filter by status"
           >
             <option value="all">All Status</option>
@@ -148,7 +253,7 @@ export default function CustomerList() {
             <option value="INACTIVE">Inactive</option>
             <option value="PENDING">Pending</option>
           </select>
-          <Button variant="primary">Add Customer</Button>
+          {/* <Button variant="primary">Add Customer</Button> */}
         </div>
       </div>
 
@@ -203,21 +308,13 @@ export default function CustomerList() {
                 </td>
                 <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
                   <div className="flex items-center justify-end gap-2">
-                    <button
-                      className="text-brand-600 hover:text-brand-900 dark:text-brand-400 dark:hover:text-brand-300"
-                      onClick={() => {
-                        /* TODO: Implement edit */
-                      }}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleViewProfile(customer)}
                     >
-                      Edit
-                    </button>
-                    <button
-                      className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 disabled:opacity-50"
-                      onClick={() => handleDeleteClick(customer)}
-                      disabled={deletingId === customer.id}
-                    >
-                      {deletingId === customer.id ? "Deleting..." : "Delete"}
-                    </button>
+                      View
+                    </Button>
                   </div>
                 </td>
               </tr>
@@ -226,19 +323,40 @@ export default function CustomerList() {
         </table>
       </div>
 
-      <ConfirmationPopup
-        isOpen={showDeletePopup}
-        onClose={() => {
-          setShowDeletePopup(false);
-          setCustomerToDelete(null);
-        }}
-        onConfirm={handleDeleteConfirm}
-        title="Delete Customer"
-        message={`Are you sure you want to delete ${customerToDelete?.firstName} ${customerToDelete?.lastName}? This action cannot be undone.`}
-        confirmText="Delete"
-        cancelText="Cancel"
-        type="danger"
-      />
+      {/* Customer Profile Modal */}
+      <Modal
+        isOpen={showProfileModal}
+        onClose={handleCloseProfileModal}
+        className="max-w-[900px] m-4 z-[9999]"
+        showCloseButton={false}
+        isFullscreen={true}
+      >
+        {selectedCustomer && (
+          <CustomerManagement
+            customer={selectedCustomer}
+            policies={policies}
+            documents={documents}
+            isLoadingPolicies={isLoadingPolicies}
+            isLoadingDocuments={isLoadingDocuments}
+            onClose={handleCloseProfileModal}
+            onDeleteCustomer={handleDeleteClick}
+            onEditCustomer={(customer) => {
+              console.log("Edit customer:", customer.id);
+            }}
+            onEditPolicy={(policy) => {
+              console.log("Edit policy:", policy.id);
+            }}
+            onDeletePolicy={(policy) => {
+              console.log("Delete policy:", policy.id);
+            }}
+            onDownloadDocument={handleDownloadDocument}
+            onDeleteDocument={(policy) => {
+              console.log("Delete document for policy:", policy.id);
+            }}
+            onUploadDocument={handleUploadDocument}
+          />
+        )}
+      </Modal>
     </div>
   );
 }
