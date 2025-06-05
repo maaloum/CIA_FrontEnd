@@ -6,36 +6,37 @@ import { RootState } from "../../../store";
 import { customerService, Customer } from "../../../services/customerService";
 import Button from "../../ui/Button";
 import { Modal } from "../../ui/modal";
-import { Tab } from "@headlessui/react";
-import Label from "../../form/Label";
 import { useHeader } from "../../../context/HeaderContext";
 import { policyService } from "../../../services/policyService";
 import toast from "react-hot-toast";
-import { documentService } from "../../../services/documentService";
-import { DocumentCard } from "../../ui/document/DocumentCard";
+import {
+  documentService,
+  DocumentType,
+} from "../../../services/documentService";
 import { CustomerManagement } from "../../ui/customer/CustomerManagement";
+import { Policy } from "../../../types/policy";
 
 type CustomerStatus = "ACTIVE" | "INACTIVE" | "PENDING";
 
-interface Policy {
-  id: string;
-  type: "home" | "car" | "life";
-  policyNumber: string;
-  startDate: string;
-  endDate: string;
-  price: number;
-  coverage: string;
-  status: "active" | "pending" | "expired";
-  premium: number;
-  paymentFrequency: "monthly" | "quarterly" | "annually";
-  nextPaymentDate: string;
-  documents: {
-    id: string;
-    name: string;
-    type: string;
-    url: string;
-  }[];
-}
+// interface Policy {
+//   id: string;
+//   type: "home" | "car" | "life";
+//   policyNumber: string;
+//   startDate: string;
+//   endDate: string;
+//   price: number;
+//   coverage: string;
+//   status: "active" | "pending" | "expired";
+//   premium: number;
+//   paymentFrequency: "monthly" | "quarterly" | "annually";
+//   nextPaymentDate: string;
+//   documents: {
+//     id: string;
+//     name: string;
+//     type: string;
+//     url: string;
+//   }[];
+// }
 
 export default function CustomerList() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -52,7 +53,9 @@ export default function CustomerList() {
   );
   const [policies, setPolicies] = useState<Policy[]>([]);
   const [isLoadingPolicies, setIsLoadingPolicies] = useState(false);
-  const [documents, setDocuments] = useState<{ [key: string]: Document[] }>({});
+  const [documents, setDocuments] = useState<{ [key: string]: DocumentType[] }>(
+    {}
+  );
   const [isLoadingDocuments, setIsLoadingDocuments] = useState(false);
   const { hideHeader, showHeader } = useHeader();
 
@@ -111,12 +114,12 @@ export default function CustomerList() {
       );
 
       // Create a flat map of documents by policyId
-      const documentsByPolicyId = {};
+      const documentsByPolicyId: { [key: string]: DocumentType[] } = {};
       policyData.forEach((policy, index) => {
         documentsByPolicyId[policy.id] = Array.isArray(
           documentsDataArray[index]
         )
-          ? documentsDataArray[index].flat() // just in case
+          ? documentsDataArray[index].flat()
           : [];
       });
 
@@ -132,7 +135,6 @@ export default function CustomerList() {
       setIsLoadingDocuments(false);
     }
   };
-
 
   const handleCloseProfileModal = () => {
     setShowProfileModal(false);
@@ -165,9 +167,9 @@ export default function CustomerList() {
     }
   };
 
-  const handleDeleteClick = (customer: Customer) => {
-    setCustomerToDelete(customer);
-    setShowDeletePopup(true);
+  const handleDeleteClick = () => {
+    // setCustomerToDelete(customer);
+    // setShowDeletePopup(true);
     hideHeader();
   };
   const getStatusColor = (status: string) => {
@@ -201,9 +203,9 @@ export default function CustomerList() {
     );
   }
 
-  const handleDownloadDocument = async (document: Document) => {
+  const handleDownloadDocument = async (doc: DocumentType) => {
     try {
-      const response = await fetch(document.url, {
+      const response = await fetch(doc.URL, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -215,7 +217,7 @@ export default function CustomerList() {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = document.fileName;
+      link.download = doc.fileName;
       document.body.appendChild(link);
       link.click();
       window.URL.revokeObjectURL(url);
