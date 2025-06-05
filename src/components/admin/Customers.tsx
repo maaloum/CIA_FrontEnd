@@ -50,7 +50,7 @@ export default function Customers() {
 
   useEffect(() => {
     fetchCustomers();
-  });
+  }, []);
 
   const fetchCustomers = async () => {
     if (!token) return;
