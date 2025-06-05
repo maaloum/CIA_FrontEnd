@@ -74,7 +74,7 @@ export const GenderDistributionChart = ({
                 >
                   {genderData.map((entry) => {
                     const genderKey = Object.entries(GENDER_LABELS).find(
-                      ([key, label]) => label === entry.name
+                      ([, label]) => label === entry.name
                     )?.[0] as keyof typeof GENDER_COLORS;
                     return (
                       <Cell

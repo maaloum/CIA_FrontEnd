@@ -55,10 +55,10 @@ export default function CustomerDashboard() {
 
   useEffect(() => {
     const fetchPolicies = async () => {
-      // if (!token || !user?.id) {
-      //   toast.error("Authentication token or user ID is missing");
-      //   return;
-      // }
+      if (!token || !user?.id) {
+        toast.error("Authentication token or user ID is missing");
+        return;
+      }
 
       try {
         setIsLoading(true);

@@ -237,7 +237,7 @@ export default function PaymentsBilling() {
                       variant="outline"
                       size="sm"
                       className="flex-1"
-                      startIcon={<DownloadIcon className="h-4 w-4" />}
+                      // startIcon={<DownloadIcon className="h-4 w-4" />}
                     >
                       Download
                     </Button>
@@ -245,7 +245,7 @@ export default function PaymentsBilling() {
                       variant="outline"
                       size="sm"
                       className="flex-1"
-                      startIcon={<DollarLineIcon className="h-4 w-4" />}
+                      // startIcon={<DollarLineIcon className="h-4 w-4" />}
                     >
                       Make Payment
                     </Button>

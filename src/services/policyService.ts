@@ -20,7 +20,7 @@ class PolicyService {
     return response.data;
   }
 
-  async getCustomerPolicies(token: string): Promise<Policy> {
+  async getCustomerPolicies(token: string ): Promise<Policy> {
     const response = await this.apiService.get<Policy>(
       `/customer/policies`,
       token
