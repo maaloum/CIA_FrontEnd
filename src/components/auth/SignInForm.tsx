@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
-import logo from "/logo.png";
+
 import {
   login,
   clearError,
@@ -12,7 +12,6 @@ import {
   // githubLogin,
 } from "../../store/slices/authSlice";
 import { RootState, AppDispatch } from "../../store";
-import Avatar from "../ui/avatar/Avatar";
 
 // interface GoogleOAuthResponse {
 //   access_token: string;

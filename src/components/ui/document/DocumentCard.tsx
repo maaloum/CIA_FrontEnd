@@ -1,8 +1,8 @@
-import { Document } from "../../../services/documentService";
+import { DocumentType } from "../../../services/documentService";
 import { Button } from "../button/Button";
 
 interface DocumentCardProps {
-  document: Document;
+  document: DocumentType;
   onDownload: () => void;
   onDelete: () => void;
 }
@@ -12,7 +12,6 @@ export const DocumentCard = ({
   onDownload,
   onDelete,
 }: DocumentCardProps) => {
-  console.log({ document });
   const getFileIcon = (fileType: string) => {
     if (fileType.includes("pdf")) return "📄";
     if (fileType.includes("image")) return "🖼️";

@@ -14,7 +14,7 @@ import { toast } from "react-hot-toast";
 import { customerService, Customer } from "../../services/customerService";
 import { useHeader } from "../../context/HeaderContext";
 import { policyService } from "../../services/policyService";
-import { documentService, Document } from "../../services/documentService";
+import { documentService, DocumentType } from "../../services/documentService";
 import { Policy } from "../../types/policy";
 import { CustomerManagement } from "../ui/customer/CustomerManagement";
 import ConfirmationPopup from "../ui/popup/ConfirmationPopup";
@@ -41,7 +41,9 @@ export default function Customers() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [policies, setPolicies] = useState<Policy[]>([]);
   const [isLoadingPolicies, setIsLoadingPolicies] = useState(false);
-  const [documents, setDocuments] = useState<{ [key: string]: Document[] }>({});
+  const [documents, setDocuments] = useState<{ [key: string]: DocumentType[] }>(
+    {}
+  );
   const [isLoadingDocuments, setIsLoadingDocuments] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -101,12 +103,12 @@ export default function Customers() {
       );
 
       // Create a flat map of documents by policyId
-      const documentsByPolicyId = {};
+      const documentsByPolicyId: { [key: string]: DocumentType[] } = {};
       policyData.forEach((policy, index) => {
         documentsByPolicyId[policy.id] = Array.isArray(
           documentsDataArray[index]
         )
-          ? documentsDataArray[index].flat() // just in case
+          ? documentsDataArray[index].flat()
           : [];
       });
 
@@ -178,10 +180,9 @@ export default function Customers() {
     setCustomerToDelete(null);
     showHeader();
   };
-
-  const handleDownloadDocument = async (document: Document) => {
+  const handleDownloadDocument = async (doc: DocumentType) => {
     try {
-      const response = await fetch(document.url, {
+      const response = await fetch(doc.URL, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -193,7 +194,7 @@ export default function Customers() {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = document.fileName;
+      link.download = doc.fileName;
       document.body.appendChild(link);
       link.click();
       window.URL.revokeObjectURL(url);
@@ -203,7 +204,6 @@ export default function Customers() {
       toast.error("Failed to download document");
     }
   };
-
   const handleUploadDocument = async (policy: Policy, files: File[]) => {
     if (!token) {
       toast.error("Authentication token is missing");

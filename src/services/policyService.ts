@@ -12,9 +12,17 @@ class PolicyService {
     return response.data;
   }
 
-  async getPolicyById(id: string, token: string): Promise<Policy> {
-    const response = await this.apiService.get<Policy>(
+  async getPolicyById(id: string, token: string): Promise<Policy[]> {
+    const response = await this.apiService.get<Policy[]>(
       `/admin/customers/${id}/policies`,
+      token
+    );
+    return response.data;
+  }
+
+  async getCustomerPolicies(token: string ): Promise<Policy> {
+    const response = await this.apiService.get<Policy>(
+      `/customer/policies`,
       token
     );
     return response.data;

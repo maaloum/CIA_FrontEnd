@@ -5,17 +5,16 @@ import { RootState } from "../../store";
 import { customerService } from "../../services/customerService";
 import { policyService } from "../../services/policyService";
 import { toast } from "react-hot-toast";
-import { PolicyGrowthChart } from "../ui/graphs/PolicyGrowthChart";
+import { PolicyGrowthChart, PolicyGrowthData } from "../ui/graphs/PolicyGrowthChart";
 import { RevenueDistributionChart } from "../ui/graphs/RevenueDistributionChart";
 import { ClaimsAnalysisChart } from "../ui/graphs/ClaimsAnalysisChart";
 import { CustomerDemographicsChart } from "../ui/graphs/CustomerDemographicsChart";
 import { GenderDistributionChart } from "../ui/graphs/GenderDistributionChart";
 import { GeographicDistributionChart } from "../ui/graphs/GeographicDistributionChart";
-import { Policy } from "../../types/policy";
 import { calculateMonthlyPolicyGrowth } from "../../utiles/PolicyGrow";
 import {
   calculateRevenueDistributionByPolicyType,
-  PolicyDistrubutionChartProps,
+  RevenueDistribution,
 } from "../../utiles/RevenueDistributionByPolicy";
 
 interface RegionData {
@@ -56,10 +55,11 @@ export default function Graphs() {
   const [ageGroupData, setAgeGroupData] = useState<AgeGroupData[]>([]);
   const [genderData, setGenderData] = useState<GenderData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  // const [policies, setPolicies] = useState<Policy[]>([]);
-  const [policyGrowthData, setPolicyGrowthData] = useState<Policy[]>([]);
+  const [policyGrowthData, setPolicyGrowthData] = useState<PolicyGrowthData[]>(
+    []
+  );
   const [policyRevenueData, setpolicyRevenueData] = useState<
-    PolicyDistrubutionChartProps[]
+    RevenueDistribution[]
   >([]);
 
   useEffect(() => {
@@ -82,38 +82,6 @@ export default function Graphs() {
 
     return age;
   };
-
-  // const calculatePolicyGrowth = (policies: Policy[]): PolicyGrowthData[] => {
-  //   const monthlyData = policies.reduce(
-  //     (acc: { [key: string]: number }, policy) => {
-  //       const date = new Date(policy.startDate);
-  //       const monthKey = `${date.getFullYear()}-${String(
-  //         date.getMonth() + 1
-  //       ).padStart(2, "0")}`;
-  //       acc[monthKey] = (acc[monthKey] || 0) + 1;
-  //       return acc;
-  //     },
-  //     {}
-  //   );
-
-  //   const sortedMonths = Object.keys(monthlyData).sort();
-  //   let previousCount = 0;
-
-  //   return sortedMonths.map((month) => {
-  //     const count = monthlyData[month];
-  //     const growthRate =
-  //       previousCount === 0
-  //         ? 0
-  //         : ((count - previousCount) / previousCount) * 100;
-  //     previousCount = count;
-
-  //     return {
-  //       month,
-  //       count,
-  //       growthRate: Number(growthRate.toFixed(1)),
-  //     };
-  //   });
-  // };
 
   const fetchPolicies = async () => {
     if (!token) return;

@@ -11,6 +11,7 @@ import {
   Legend,
   TooltipProps,
 } from "recharts";
+import React from "react";
 
 interface PolicyDistrubutionChartProps {
   policies: RevenueDistribution[];
@@ -89,7 +90,7 @@ export const RevenueDistributionChart = ({
                     `${name} (${(percent * 100).toFixed(0)}%)`
                   }
                 >
-                  {policies.map((entry, index) => (
+                  {policies.map((_, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={COLORS[index % COLORS.length]}
@@ -100,14 +101,15 @@ export const RevenueDistributionChart = ({
                 <Legend
                   verticalAlign="bottom"
                   height={36}
-                  formatter={(
-                    value: string,
-                    entry: { payload: RevenueDistribution }
-                  ) => (
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
-                      {value} ({formatCurrency(entry.payload.totalRevenue)})
-                    </span>
-                  )}
+                  formatter={(value: string, entry): React.ReactNode => {
+                    const payload =
+                      entry.payload as unknown as RevenueDistribution;
+                    return (
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        {value} ({formatCurrency(payload.totalRevenue)})
+                      </span>
+                    );
+                  }}
                 />
               </PieChart>
             </ResponsiveContainer>

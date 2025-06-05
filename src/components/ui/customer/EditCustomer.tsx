@@ -30,26 +30,16 @@ export const EditCustomer = ({
       communicationPref: customer.customer.communicationPref,
     },
   });
-
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    if (name.startsWith("customer.")) {
-      const field = name.split(".")[1];
-      setFormData((prev) => ({
-        ...prev,
-        customer: {
-          ...prev.customer,
-          [field]: value,
-        },
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-    }
+    const field = name.startsWith("customer.") ? name.split(".")[1] : name;
+
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

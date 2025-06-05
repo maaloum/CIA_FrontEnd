@@ -67,7 +67,7 @@ export const CustomerDemographicsChart = ({
                     `${name} (${(percent * 100).toFixed(0)}%)`
                   }
                 >
-                  {ageGroupData.map((entry, index) => (
+                  {ageGroupData.map((_, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={AGE_COLORS[index % AGE_COLORS.length]}

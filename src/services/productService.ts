@@ -1,6 +1,6 @@
 import { Product } from "../types/product";
 
-const API_BASE_URL = "http://localhost:8080/api/v1";
+const API_BASE_URL = "https://cia-backend-shfd.onrender.com/api/v1";
 
 export const productService = {
   async getProducts(): Promise<Product[]> {

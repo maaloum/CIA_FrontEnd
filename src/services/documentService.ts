@@ -2,20 +2,20 @@ import axios from "axios";
 
 const API_URL = "http://localhost:8080/api/v1";
 
-export interface Document {
+export interface DocumentType {
   id: string;
   fileName: string;
   fileType: string;
   fileSize: number;
   uploadDate: string;
-  url: string;
+  URL: string;
 }
 
 class DocumentService {
   async getPolicyDocuments(
     policyId: string,
     token: string
-  ): Promise<Document[]> {
+  ): Promise<DocumentType[]> {
     try {
       const response = await axios.get(
         `${API_URL}/documents/policy/${policyId}`,
@@ -37,7 +37,7 @@ class DocumentService {
     policyId: string,
     applicationId: string,
     token: string
-  ): Promise<Document[]> {
+  ): Promise<DocumentType[]> {
     try {
       const formData = new FormData();
       files.forEach((file) => {

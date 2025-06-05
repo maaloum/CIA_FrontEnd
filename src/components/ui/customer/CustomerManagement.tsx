@@ -4,13 +4,13 @@ import { ProfileCard } from "../profile/ProfileCard";
 import { PolicyCard } from "../policy/PolicyCard";
 import { DocumentCard } from "../document/DocumentCard";
 import { Policy } from "../../../types/policy";
-import { Document } from "../../../services/documentService";
+import { DocumentType } from "../../../services/documentService";
 import { Button } from "../..//ui/button/Button";
 
 interface CustomerPanelProps {
   customer: Customer;
   policies: Policy[];
-  documents: { [key: string]: Document[] };
+  documents: { [key: string]: DocumentType[] };
   isLoadingPolicies: boolean;
   isLoadingDocuments: boolean;
   onClose: () => void;
@@ -18,8 +18,8 @@ interface CustomerPanelProps {
   onEditCustomer?: (customer: Customer) => void;
   onEditPolicy?: (policy: Policy) => void;
   onDeletePolicy?: (policy: Policy) => void;
-  onDownloadDocument: (document: Document) => void;
-  onDeleteDocument?: (policy: Policy) => void;
+  onDownloadDocument: (doc: DocumentType) => void;
+  onDeleteDocument?: (doc: DocumentType) => void;
   onUploadDocument: (policy: Policy, files: File[]) => void;
 }
 
@@ -196,7 +196,7 @@ export const CustomerManagement = ({
                               <DocumentCard
                                 document={document}
                                 onDownload={() => onDownloadDocument(document)}
-                                onDelete={() => onDeleteDocument?.(policy)}
+                                onDelete={() => onDeleteDocument?.(document)}
                               />
                             </div>
                           ))}
