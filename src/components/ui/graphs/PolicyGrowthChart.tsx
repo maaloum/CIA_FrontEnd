@@ -12,7 +12,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-interface PolicyGrowthData {
+export interface PolicyGrowthData {
   month: string;
   count: number;
   growthRate: number;

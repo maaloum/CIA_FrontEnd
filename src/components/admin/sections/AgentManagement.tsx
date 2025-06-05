@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ListIcon, PencilIcon, TrashBinIcon } from "../../../icons";
 import Input from "../../form/input/InputField";
 import Button from "../../ui/Button";
-import AddAgentForm, { AgentFormData } from "./AddAgentForm";
+// import AddAgentForm, { AgentFormData } from "./AddAgentForm";
 
 interface Agent {
   id: string;
@@ -21,7 +21,7 @@ interface Agent {
 export default function AgentManagement() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("all");
-  const [isAddAgentFormOpen, setIsAddAgentFormOpen] = useState(false);
+  // const [isAddAgentFormOpen, setIsAddAgentFormOpen] = useState(false);
 
   // Mock data - replace with actual API call
   const [agents, setAgents] = useState<Agent[]>([
@@ -41,9 +41,8 @@ export default function AgentManagement() {
     // Add more mock data as needed
   ]);
 
-  const handleAddAgent = (agentData: AgentFormData) => {
+  const handleAddAgent = (agentData: Agent)  => {
     const newAgent: Agent = {
-      id: Math.random().toString(36).substr(2, 9), // Generate random ID
       ...agentData,
       performance: {
         sales: 0,
@@ -52,7 +51,7 @@ export default function AgentManagement() {
       },
     };
     setAgents((prev) => [...prev, newAgent]);
-    setIsAddAgentFormOpen(false);
+    // setIsAddAgentFormOpen(false);
   };
 
   const filteredAgents = agents.filter((agent) => {
@@ -89,7 +88,7 @@ export default function AgentManagement() {
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
-          <Button variant="primary" onClick={() => setIsAddAgentFormOpen(true)}>
+          <Button variant="primary" onClick={() =>  handleAddAgent}>
             Add Agent
           </Button>
         </div>
@@ -176,11 +175,11 @@ export default function AgentManagement() {
         </table>
       </div>
 
-      <AddAgentForm
+      {/* <AddAgentForm
         isOpen={isAddAgentFormOpen}
         onClose={() => setIsAddAgentFormOpen(false)}
         onSubmit={handleAddAgent}
-      />
+      /> */}
     </div>
   );
 }
